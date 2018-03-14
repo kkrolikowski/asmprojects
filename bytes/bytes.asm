@@ -12,7 +12,12 @@ sys_EXIT        equ 60
 ; Variables
 bNum1   db 60
 bNum2   db 50
+bNum3   db 13
+bNum4   db 5
 bAns1   db 0
+bAns2   db 0
+bAns3   db 0
+bAns6   db 0
 
 section .text
 global _start
@@ -21,6 +26,18 @@ _start:
     mov al, byte [bNum1]
     add al, byte [bNum2]
     mov byte [bAns1], al
+; bAns2 = bNum1 + bNum3
+    mov al, byte [bNum1]
+    add al, byte [bNum3]
+    mov byte [bAns2], al
+; bAns3 = bnum3 + bNum4
+    mov al, byte [bNum3]
+    add al, byte [bNum4]
+    mov byte [bAns3], al
+; bAns6 = bNum1 - bNum2
+    mov al, byte [bNum1]
+    sub al, byte [bNum2]
+    mov byte [bAns6], al
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
