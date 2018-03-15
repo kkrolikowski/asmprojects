@@ -22,6 +22,7 @@ bAns7   db 0
 bAns8   db 0
 wAns11  dw 0
 wAns12  dw 0
+wAns13  dw 0
 
 section .text
 global _start
@@ -58,6 +59,10 @@ _start:
     mov al, byte [bNum2]
     mul byte [bNum2]
     mov word [wAns12], ax
+; wAns13 = bNum2 * bNum4
+    mov al, byte [bNum2]
+    mul byte [bNum4]
+    mov word [wAns13], ax
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS

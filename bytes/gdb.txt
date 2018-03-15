@@ -153,6 +153,24 @@ echo | wAns12
 echo \n-------- \n
 x/dh &wAns12
 x/xh &wAns12
+echo \n######################################### \n
+echo wAns13 = bNum2 * bNum4
+echo \n######################################### \n
+echo \n-------- \n
+echo | bNum2
+echo \n-------- \n
+x/db &bNum2
+x/xb &bNum2
+echo \n-------- \n
+echo | bNum4
+echo \n-------- \n
+x/db &bNum4
+x/xb &bNum4
+echo \n-------- \n
+echo | wAns13
+echo \n-------- \n
+x/dh &wAns13
+x/xh &wAns13
 echo \n \n
 set logging off
 quit
