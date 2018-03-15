@@ -63,6 +63,24 @@ echo | bAns3
 echo \n-------- \n
 x/db &bAns3
 x/xb &bAns3
+echo \n######################################### \n
+echo bAns6 = bNum1 - bNum2
+echo \n######################################### \n
+echo \n-------- \n
+echo | bNum1
+echo \n-------- \n
+x/db &bNum1
+x/xb &bNum1
+echo \n-------- \n
+echo | bNum2
+echo \n-------- \n
+x/db &bNum2
+x/xb &bNum2
+echo \n-------- \n
+echo | bAns6
+echo \n-------- \n
+x/db &bAns6
+x/xb &bAns6
 echo \n \n
 set logging off
 quit

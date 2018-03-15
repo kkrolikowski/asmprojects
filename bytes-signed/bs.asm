@@ -17,6 +17,7 @@ bNum4   db   2
 bAns1   db 0
 bAns2   db 0
 bAns3   db 0
+bAns6   db 0
 
 section .text
 global _start
@@ -33,6 +34,10 @@ _start:
     mov al, byte [bNum3]
     add al, byte [bNum4]
     mov byte [bAns3], al
+; bAns6 = bNum1 - bNum2
+    mov al, byte [bNum1]
+    sub al, byte [bNum2]
+    mov byte [bAns6], al
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
