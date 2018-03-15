@@ -20,6 +20,9 @@ bAns3   db 0
 bAns6   db 0
 bAns7   db 0
 bAns8   db 0
+wAns11  dw 0
+wAns12  dw 0
+wAns13  dw 0
 
 section .text
 global _start
@@ -48,6 +51,21 @@ _start:
     mov al, byte [bNum2]
     sub al, byte [bNum4]
     mov byte [bAns8], al
+; wAns11 = bNum1 * bNum3
+    mov al, byte [bNum1]
+    mov ah, 0
+    imul byte [bNum3]
+    mov word [wAns11], ax
+; wAns12 = bNum2 * bNum2
+    mov al, byte [bNum2]
+    mov ah, 0
+    imul byte [bNum2]
+    mov word [wAns12], ax
+; wAns13 = bNum2 * bNum4
+    mov al, byte [bNum2]
+    mov ah, 0
+    imul byte [bNum4]
+    mov word [wAns13], ax
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
