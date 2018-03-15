@@ -9,7 +9,24 @@ set logging file debug.txt
 set logging overwrite
 set logging on
 set prompt
+echo \n######################################### \n
+echo bAns1 = bNum1 + bNum2
+echo \n######################################### \n
+echo \n-------- \n
+echo | bNum1
+echo \n-------- \n
+x/db &bNum1
+x/xb &bNum1
+echo \n-------- \n
+echo | bNum2
+echo \n-------- \n
+x/db &bNum2
+x/xb &bNum2
+echo \n-------- \n
+echo | bAns1
+echo \n-------- \n
+x/db &bAns1
+x/xb &bAns1
 echo \n \n
 set logging off
-continue
 quit
