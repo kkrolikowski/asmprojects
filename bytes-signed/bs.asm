@@ -13,8 +13,10 @@ sys_EXIT        equ 60
 bNum1   db -63
 bNum2   db -55
 bNum3   db  58
+bNum4   db   2
 bAns1   db 0
 bAns2   db 0
+bAns3   db 0
 
 section .text
 global _start
@@ -27,6 +29,10 @@ _start:
     mov al, byte [bNum1]
     add al, byte [bNum3]
     mov byte [bAns2], al
+; bAns3 = bNum3 + bNum4
+    mov al, byte [bNum3]
+    add al, byte [bNum4]
+    mov byte [bAns3], al
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
