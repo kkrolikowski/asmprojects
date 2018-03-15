@@ -81,6 +81,42 @@ echo | bAns6
 echo \n-------- \n
 x/db &bAns6
 x/xb &bAns6
+echo \n######################################### \n
+echo bAns7 = bNum1 - bNum3
+echo \n######################################### \n
+echo \n-------- \n
+echo | bNum1
+echo \n-------- \n
+x/db &bNum1
+x/xb &bNum1
+echo \n-------- \n
+echo | bNum3
+echo \n-------- \n
+x/db &bNum3
+x/xb &bNum3
+echo \n-------- \n
+echo | bAns7
+echo \n-------- \n
+x/db &bAns7
+x/xb &bAns7
+echo \n######################################### \n
+echo bAns8 = bNum2 - bNum4
+echo \n######################################### \n
+echo \n-------- \n
+echo | bNum2
+echo \n-------- \n
+x/db &bNum2
+x/xb &bNum2
+echo \n-------- \n
+echo | bNum4
+echo \n-------- \n
+x/db &bNum4
+x/xb &bNum4
+echo \n-------- \n
+echo | bAns8
+echo \n-------- \n
+x/db &bAns8
+x/xb &bAns8
 echo \n \n
 set logging off
 quit
