@@ -171,6 +171,66 @@ echo | wAns13
 echo \n-------- \n
 x/dh &wAns13
 x/xh &wAns13
+echo \n######################################### \n
+echo bAns16 = bNum1 / bNum2
+echo \n######################################### \n
+echo \n-------- \n
+echo | bNum1
+echo \n-------- \n
+x/db &bNum1
+x/xb &bNum1
+echo \n-------- \n
+echo | bNum2
+echo \n-------- \n
+x/db &bNum2
+x/xb &bNum2
+echo \n-------- \n
+echo | bAns16
+echo \n-------- \n
+x/db &bAns16
+x/xb &bAns16
+echo \n######################################### \n
+echo bAns17 = bNum3 / bNum4
+echo \n######################################### \n
+echo \n-------- \n
+echo | bNum3
+echo \n-------- \n
+x/db &bNum3
+x/xb &bNum3
+echo \n-------- \n
+echo | bNum4
+echo \n-------- \n
+x/db &bNum4
+x/xb &bNum4
+echo \n-------- \n
+echo | bAns17
+echo \n-------- \n
+x/db &bAns17
+x/xb &bAns17
+echo \n######################################### \n
+echo bAns18 = wNum1 / bNum4 \n
+echo bRem18 = wNum1 % bnum4
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum1
+echo \n-------- \n
+x/dh &wNum1
+x/xh &wNum1
+echo \n-------- \n
+echo | bNum4
+echo \n-------- \n
+x/db &bNum4
+x/xb &bNum4
+echo \n-------- \n
+echo | bAns18
+echo \n-------- \n
+x/db &bAns18
+x/xb &bAns18
+echo \n-------- \n
+echo | bRem18
+echo \n-------- \n
+x/db &bRem18
+x/xb &bRem18
 echo \n \n
 set logging off
 quit
