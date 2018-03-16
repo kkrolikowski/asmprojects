@@ -1,0 +1,68 @@
+#-----------------------------------------
+#       Debugger input script
+#-----------------------------------------
+echo \n \n
+break last
+run
+set pagination off
+set logging file out.txt
+set logging overwrite
+set logging on
+set prompt
+echo \n######################################### \n
+echo wAns1 = wNum1 + wNum2
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum1
+echo \n-------- \n
+x/dh &wNum1
+x/xh &wNum1
+echo \n-------- \n
+echo | wNum2
+echo \n-------- \n
+x/dh &wNum2
+x/xh &wNum2
+echo \n-------- \n
+echo | wAns1
+echo \n-------- \n
+x/dh &wAns1
+x/xh &wAns1
+echo \n######################################### \n
+echo wAns2 = wNum1 + wNum3
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum1
+echo \n-------- \n
+x/dh &wNum1
+x/xh &wNum1
+echo \n-------- \n
+echo | wNum3
+echo \n-------- \n
+x/dh &wNum3
+x/xh &wNum3
+echo \n-------- \n
+echo | wAns2
+echo \n-------- \n
+x/dh &wAns2
+x/xh &wAns2
+echo \n######################################### \n
+echo wAns3 = wNum3 + wNum4
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum3
+echo \n-------- \n
+x/dh &wNum3
+x/xh &wNum3
+echo \n-------- \n
+echo | wNum4
+echo \n-------- \n
+x/dh &wNum4
+x/xh &wNum4
+echo \n-------- \n
+echo | wAns3
+echo \n-------- \n
+x/dh &wAns3
+x/xh &wAns3
+echo \n \n
+set logging off
+quit
