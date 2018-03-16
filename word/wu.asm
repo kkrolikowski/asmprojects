@@ -17,6 +17,9 @@ wNum4   dw 7501
 wAns1   dw 0
 wAns2   dw 0
 wAns3   dw 0
+wAns6   dw 0
+wAns7   dw 0
+wAns8   dw 0
 
 section .text
 global _start
@@ -33,6 +36,18 @@ _start:
     mov ax, word [wNum3]
     add ax, word [wNum4]
     mov word [wAns3], ax
+; wAns6 = wNum1 - wNum2
+    mov ax, word [wNum1]
+    sub ax, word [wNum2]
+    mov word [wAns6], ax
+; wAns7 = wNum1 - wNum3
+    mov ax, word [wNum1]
+    sub ax, word [wNum3]
+    mov word [wAns7], ax
+; wAns8 = wNum2 - wNum4
+    mov ax, word [wNum2]
+    sub ax, word [wNum4]
+    mov word [wAns8], ax
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS

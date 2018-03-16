@@ -63,6 +63,60 @@ echo | wAns3
 echo \n-------- \n
 x/dh &wAns3
 x/xh &wAns3
+echo \n######################################### \n
+echo wAns6 = wNum1 - wNum2
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum1
+echo \n-------- \n
+x/dh &wNum1
+x/xh &wNum1
+echo \n-------- \n
+echo | wNum2
+echo \n-------- \n
+x/dh &wNum2
+x/xh &wNum2
+echo \n-------- \n
+echo | wAns6
+echo \n-------- \n
+x/dh &wAns6
+x/xh &wAns6
+echo \n######################################### \n
+echo wAns7 = wNum1 - wNum3
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum1
+echo \n-------- \n
+x/dh &wNum1
+x/xh &wNum1
+echo \n-------- \n
+echo | wNum3
+echo \n-------- \n
+x/dh &wNum3
+x/xh &wNum3
+echo \n-------- \n
+echo | wAns7
+echo \n-------- \n
+x/dh &wAns7
+x/xh &wAns7
+echo \n######################################### \n
+echo wAns8 = wNum2 - wNum4
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum2
+echo \n-------- \n
+x/dh &wNum2
+x/xh &wNum2
+echo \n-------- \n
+echo | wNum4
+echo \n-------- \n
+x/dh &wNum4
+x/xh &wNum4
+echo \n-------- \n
+echo | wAns8
+echo \n-------- \n
+x/dh &wAns8
+x/xh &wAns8
 echo \n \n
 set logging off
 quit
