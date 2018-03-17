@@ -14,6 +14,7 @@ wNum1   dw 7639
 wNum2   dw 23155
 wNum3   dw 16760
 wNum4   dw 7501
+dNum1   dd 34485051
 wAns1   dw 0
 wAns2   dw 0
 wAns3   dw 0
@@ -25,6 +26,8 @@ dAns12  dd 0
 dAns13  dd 0
 wAns16  dw 0
 wAns17  dw 0
+wAns18  dw 0
+wRem18  dw 0
 
 section .text
 global _start
@@ -81,6 +84,13 @@ _start:
     mov dx, 0
     div word [wNum4]
     mov word [wAns17], ax
+; wAns18 = dNum1 / wNum4
+; wAns18 = dNum1 % wNum4
+    mov ax, word [dNum1]
+    mov dx, word [dNum1+2]
+    div word [wNum4]
+    mov word [wAns18], ax
+    mov word [wRem18], dx
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
