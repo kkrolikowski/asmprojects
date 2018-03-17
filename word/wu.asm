@@ -20,6 +20,9 @@ wAns3   dw 0
 wAns6   dw 0
 wAns7   dw 0
 wAns8   dw 0
+dAns11  dd 0
+dAns12  dd 0
+dAns13  dd 0
 
 section .text
 global _start
@@ -48,6 +51,24 @@ _start:
     mov ax, word [wNum2]
     sub ax, word [wNum4]
     mov word [wAns8], ax
+; dAns11 = wNum1 * wNum3
+    mov ax, word [wNum1]
+    mov dx, 0
+    mul word [wNum3]
+    mov word [dAns11], ax
+    mov word [dAns11+2], dx
+; dAns12 = wNum2 * wNum2
+    mov ax, word [wNum2]
+    mov dx, 0
+    mul word [wNum2]
+    mov word [dAns12], ax
+    mov word [dAns12+2], dx
+; dAns13 = wNum2 * wNum4
+    mov ax, word [wNum2]
+    mov dx, 0
+    mul word [wNum4]
+    mov word [dAns13], ax
+    mov word [dAns13+2], dx
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS

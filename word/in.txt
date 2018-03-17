@@ -117,6 +117,60 @@ echo | wAns8
 echo \n-------- \n
 x/dh &wAns8
 x/xh &wAns8
+echo \n######################################### \n
+echo dAns11 = wNum1 * wNum3
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum1
+echo \n-------- \n
+x/dh &wNum1
+x/xh &wNum1
+echo \n-------- \n
+echo | wNum3
+echo \n-------- \n
+x/dh &wNum3
+x/xh &wNum3
+echo \n-------- \n
+echo | dAns11
+echo \n-------- \n
+x/dw &dAns11
+x/xw &dAns11
+echo \n######################################### \n
+echo dAns12 = wNum2 * wNum2
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum2
+echo \n-------- \n
+x/dh &wNum2
+x/xh &wNum2
+echo \n-------- \n
+echo | wNum2
+echo \n-------- \n
+x/dh &wNum2
+x/xh &wNum2
+echo \n-------- \n
+echo | dAns12
+echo \n-------- \n
+x/dw &dAns12
+x/xw &dAns12
+echo \n######################################### \n
+echo dAns13 = wNum2 * wNum4
+echo \n######################################### \n
+echo \n-------- \n
+echo | wNum2
+echo \n-------- \n
+x/dh &wNum2
+x/xh &wNum2
+echo \n-------- \n
+echo | wNum4
+echo \n-------- \n
+x/dh &wNum4
+x/xh &wNum4
+echo \n-------- \n
+echo | dAns13
+echo \n-------- \n
+x/dw &dAns13
+x/xw &dAns13
 echo \n \n
 set logging off
 quit
