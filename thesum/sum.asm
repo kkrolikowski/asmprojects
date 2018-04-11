@@ -17,12 +17,12 @@ list    dw  1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
 section .text
 global _start
 _start:
-    mov rcx, MAX
-    mov rsi, 0
+    mov rcx, MAX                    ; How many numbers to sum
+    mov rsi, 0                      ; loop index
 sum:
-    add ax, word [list+rsi*2]
-    inc rsi
-    loop sum
+    add ax, word [list+rsi*2]       ; ax += list[index]
+    inc rsi                         ; index++
+    loop sum                        ; sum next if rcx != 0
 last:
     mov rax, sys_EXIT
     mov rbx, EXIT_SUCCESS
