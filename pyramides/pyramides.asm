@@ -11,28 +11,28 @@ section .data
 ; Constants
 EXIT_SUCCESS    equ 0
 sys_EXIT        equ 60
-MAX             equ 10
+MAX             equ 10                                      ; Number of pyramides to calculate
 ; ----------
 ; Variables
-aSides          dw 474,155,251,388,125,17,25,482,456,29
-heights         dw 494,132,112,449,298,410,257,63,343,53
-tmp             dd 0
+aSides          dw 474,155,251,388,125,17,25,482,456,29     ; pyramide base side length
+heights         dw 494,132,112,449,298,410,257,63,343,53    ; pyramide height
+tmp             dd 0                                        ; temp. variable used in calculations
 
-sumOfVolumes    dq 0
-sumOfAreas      dq 0
-averageVolume   dq 0
-averageArea     dq 0
+sumOfVolumes    dq 0                                        ; sum of volumes of all pyramides
+sumOfAreas      dq 0                                        ; sum of areas of all pyramides
+averageVolume   dq 0                                        ; average pyramide volume
+averageArea     dq 0                                        ; aerage  pyramide area
 
-minArea         dq 0
-maxArea         dq 0
-minVolume       dq 0
-maxVolume       dq 0
+minArea         dq 0                                        ; smallest pyramide area
+maxArea         dq 0                                        ; largest pyramide area
+minVolume       dq 0                                        ; smallest pramide volume
+maxVolume       dq 0                                        ; largest pyramide volume
 
 section .bss
-baseAreas       resd MAX
-sideAreas       resq MAX
-pyramidAreas    resq MAX
-pyramidVolumes  resq MAX 
+baseAreas       resd MAX                                    ; array baseAreas[MAX]
+sideAreas       resq MAX                                    ; array sideAreas[MAX]
+pyramidAreas    resq MAX                                    ; array pyramidAreas[MAX]
+pyramidVolumes  resq MAX                                    ; array pyramidVolumes[MAX]
 
 section .text
 global _start
