@@ -37,19 +37,20 @@ pyramidVolumes  resq MAX                                    ; array pyramidVolum
 section .text
 global _start
 _start:
-    mov rsi, 0                      
-    mov r8, 0
-    mov rcx, MAX
+    mov rsi, 0                                              ; index = 0                    
+    mov r8, 0                                               ; array offset
+    mov rcx, MAX                                            ; set loop limit
 
 ; ----------
 ; Pyramides basis
 ; Base(n) = a(n)^2
-calcBase:
-    mov ax, word [aSides+rsi*2]
-    mov dx, 0
-    mul ax
-    mov word [baseAreas+r8*2], ax
-    inc r8
+calcBase:                                                   ; 
+                                                            ; while (index < MAX)
+    mov ax, word [aSides+rsi*2]                             ; {
+    mov dx, 0                                               ;    baseAreas[index] = aSides[index] * aSides[index];
+    mul ax                                                  ;    index++;
+    mov word [baseAreas+r8*2], ax                           ; }
+    inc r8                                                  ;
     mov word [baseAreas+r8*2], dx
     inc rsi
     inc r8
@@ -57,22 +58,22 @@ calcBase:
 
 ; ----------
 ; Reset loop   
-    mov rsi, 0
-    mov r8, 0
-    mov rcx, MAX
+    mov rsi, 0                                              ; index = 0
+    mov r8, 0                                               ; array offset
+    mov rcx, MAX                                            ; set loop limit
 
 ; ----------
 ; Pyramides side areas
 ; Side(n) = (a(n)/2 * h(n)) * 4
     mov r9w, 2
     mov r10d, 4
-calcSides:
-    mov ax, word [aSides+rsi*2]
-    mov dx, 0
-    div r9w
-    mul word [heights+rsi*2]
-    mov word [tmp], ax
-    mov word [tmp+2], dx
+calcSides:                                                  ;
+    mov ax, word [aSides+rsi*2]                             ; while (index < MAX)
+    mov dx, 0                                               ; {
+    div r9w                                                 ;    sideAreas[index] = (aSides[index] / 2 * heights[index]) * 4;
+    mul word [heights+rsi*2]                                ;    index++;
+    mov word [tmp], ax                                      ; }
+    mov word [tmp+2], dx                                    ;
     mov eax, dword [tmp]
     mov edx, 0
     mul r10d
@@ -85,37 +86,38 @@ calcSides:
 
 ; ----------
 ; Reset loop
-    mov rsi, 0
-    mov rcx, MAX
+    mov rsi, 0                                              ; index = 0;
+    mov rcx, MAX                                            ; set loop limit
 
 ; ----------
 ; Pyramides areas
 ; Area(n) = SideArea(n) + BaseArea(n)
-calcAreas:
-    mov eax, dword [baseAreas+rsi*4]
-    add rax, qword [sideAreas+rsi*8]
-    mov qword [pyramidAreas+rsi*8], rax
-    inc rsi
-    mov rax, 0
+calcAreas:                                                  ; 
+                                                            ; while (index < MAX)
+    mov eax, dword [baseAreas+rsi*4]                        ; {
+    add rax, qword [sideAreas+rsi*8]                        ;    pyramidAreas[index] = sideAreas[index] + baseAreas[index];
+    mov qword [pyramidAreas+rsi*8], rax                     ;    index++;
+    inc rsi                                                 ; }
+    mov rax, 0                                              ;
     loop calcAreas
 
 ; ----------
 ; Reset loop
-    mov rsi, 0
-    mov rcx, MAX
+    mov rsi, 0                                              ; index = 0;
+    mov rcx, MAX                                            ; set loop limit
 
 ; ----------
 ; Pyramides volume
 ; Volume(n) = (baseArea(n)/3) * height(n)
     mov r8d, 0
     mov r9d, 3
-calcVolumes:
-    mov eax, dword [baseAreas+rsi*4]
-    mov edx, 0
-    div r9d
-    movzx r10d, word [heights+rsi*2]
-    mov edx, 0
-    mul r10d
+calcVolumes:                                                ;
+    mov eax, dword [baseAreas+rsi*4]                        ; while (index < MAX)
+    mov edx, 0                                              ; {
+    div r9d                                                 ;    pyramidVolumes[index] = (baseAreas[index] / 3) * heights[index];
+    movzx r10d, word [heights+rsi*2]                        ;    index++;
+    mov edx, 0                                              ; }
+    mul r10d                                                ;
     mov dword [pyramidVolumes+r8d*4], eax
     inc r8d
     mov dword [pyramidVolumes+r8d*4], edx
@@ -125,42 +127,42 @@ calcVolumes:
 
 ; ----------
 ; Reset loop
-    mov rsi, 0
-    mov rcx, MAX
+    mov rsi, 0                                              ; index = 0;
+    mov rcx, MAX                                            ; set loop limit
 
 ; ----------
 ; Sum of Volumes
     mov rax, 0
-sumVolumes:
-    add rax, qword [pyramidVolumes+rsi*8]
-    inc rsi
-    loop sumVolumes
+sumVolumes:                                                 ;
+    add rax, qword [pyramidVolumes+rsi*8]                   ; while (index < MAX)
+    inc rsi                                                 ;    sumOfVolumes += pyramidVolumes[index++];
+    loop sumVolumes                                         ;
     mov qword [sumOfVolumes], rax 
 ; ----------
 ; Average volume
-    mov r8, MAX
-    mov rdx, 0
-    div r8
-    mov qword [averageVolume], rax
+    mov r8, MAX                                             ;
+    mov rdx, 0                                              ;
+    div r8                                                  ; averageVolume = sumOfVolumes / MAX
+    mov qword [averageVolume], rax                          ;
 
 ; ----------
 ; Reset loop
-    mov rsi, 0
-    mov rcx, MAX
+    mov rsi, 0                                              ; index = 0;
+    mov rcx, MAX                                            ; set loop limit
 
 ; ----------
 ; Sum of areas
     mov rax, 0
-SumAreas:
-    add rax, qword [pyramidAreas+rsi*8]
-    inc rsi
-    loop SumAreas
-    mov qword [sumOfAreas], rax
+SumAreas:                                                   ;
+    add rax, qword [pyramidAreas+rsi*8]                     ; while (index < MAX)
+    inc rsi                                                 ;    sumOfAreas += pyramidAreas[index++];
+    loop SumAreas                                           ;
+    mov qword [sumOfAreas], rax                             
 ; ----------
 ; Average area
-    mov rdx, 0
-    div r8
-    mov qword [averageArea], rax
+    mov rdx, 0                                              ;
+    div r8                                                  ; averageArea = sumOfAreas / MAX
+    mov qword [averageArea], rax                            ;
 
 ; Reset counter
     mov rcx, MAX
