@@ -165,30 +165,30 @@ SumAreas:                                                   ;
     mov qword [averageArea], rax                            ;
 
 ; Reset counter
-    mov rcx, MAX
-    mov rsi, 0
+    mov rsi, 0                                              ; index = 0
+    mov rcx, MAX                                            ; set loop limit
 
 ; Find min and max area
-    mov rax, qword [pyramidAreas]
-    mov qword [minArea], rax
-    mov qword [maxArea], rax
+    mov rax, qword [pyramidAreas]                           
+    mov qword [minArea], rax                                ; minArea = pyramidAreas[0]
+    mov qword [maxArea], rax                                ; maxArea = pyramidAreas[0]
     
     mov rax, qword [pyramidVolumes]
-    mov qword [minVolume], rax
-    mov qword [maxVolume], rax
+    mov qword [minVolume], rax                              ; minVolume = pyramidVolumes[0]
+    mov qword [maxVolume], rax                              ; maxVolume = pyramidVolumes[0]
 
 MinMaxArea:
-    mov rax, qword [pyramidAreas+rsi*8]
-    cmp rax, qword [minArea]
-    jb newMinArea
-    cmp rax, qword [maxArea]
-    ja newMaxArea
-    inc rsi
-    loop MinMaxArea
-
+    mov rax, qword [pyramidAreas+rsi*8]                     ; while (index < MAX)
+    cmp rax, qword [minArea]                                ; {
+    jb newMinArea                                           ;     if (pyramidAreas[index] < minVolume)
+    cmp rax, qword [maxArea]                                ;        minVolume = pyramidAreas[index];
+    ja newMaxArea                                           ;     if (pyramidAreas[index] > maxVolume)
+    inc rsi                                                 ;        maxVolume = pyramidAreas[index];
+    loop MinMaxArea                                         ;     i++;
+                                                            ; }
 ; Reset counter
-    mov rcx, MAX
-    mov rsi, 0
+    mov rsi, 0                                              ; index = 0
+    mov rcx, MAX                                            ; set loop limit
 
     jmp MinMaxVolume
 newMinArea:
@@ -199,14 +199,14 @@ newMaxArea:
     jmp MinMaxArea
 
 MinMaxVolume:
-    mov rax, qword [pyramidVolumes+rsi*8]
-    cmp rax, qword [minVolume]
-    jb newMinVolume
-    cmp rax, qword [maxVolume]
-    ja newMaxVolume
-    inc rsi
-    loop MinMaxVolume
-    jmp last
+    mov rax, qword [pyramidVolumes+rsi*8]                   ; while (index < MAX)
+    cmp rax, qword [minVolume]                              ; {
+    jb newMinVolume                                         ;    if (pyramidVolumes[index] < minVolume)
+    cmp rax, qword [maxVolume]                              ;        minVolume = pyramidVolumes[index];
+    ja newMaxVolume                                         ;     if (pyramidVolumes[index] > maxVolume)
+    inc rsi                                                 ;        maxVolume = pyramidVolumes[index];
+    loop MinMaxVolume                                       ;     index++;
+    jmp last                                                ; }
 newMinVolume:
     mov qword [minVolume], rax
     jmp MinMaxVolume
