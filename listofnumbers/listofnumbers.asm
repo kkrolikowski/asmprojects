@@ -37,7 +37,7 @@ _start:
 
 ; Find the median value (without prior sorting)
     mov rax, LIMIT
-    mov r8d, 2
+    mov r8, 2
     mov rdx, 0
     div r8
     mov rsi, rax
