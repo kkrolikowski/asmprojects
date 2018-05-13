@@ -28,13 +28,32 @@ sum_divby3  dd 0
 ave_all     dd 0
 min         dd 0
 max         dd 0
+tmp         dd 0
+med         dd 0
 
 section .text
 global _start
 _start:
+
+; Find the median value (without prior sorting)
+    mov rax, LIMIT
+    mov r8d, 2
+    mov rdx, 0
+    div r8
+    mov rsi, rax
+    mov rax, 0
+    mov eax, dword [list+rsi*4]
+    mov dword [tmp], eax
+    dec rsi
+    mov eax, dword [list+rsi*4]
+    add eax, dword [tmp]
+    mov edx, 0
+    div r8d
+    mov dword [med], eax
+
     mov ecx, LIMIT
     mov rsi, 0
-
+    mov eax, 0
 ; -----
 ; Calculate the sum of all integers
 
