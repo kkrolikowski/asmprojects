@@ -1,8 +1,8 @@
-;**************************************************************************************
+;*******************************************************************************************
 ; Program demonstrates various operations on a list of unsigned integers including:
 ; * find the minimum, maximum, sum and average
-; * find the minimum, maximum, sum and average for numbers that are divisible by 3
-;**************************************************************************************
+; * find the sum, count, and integer average for the numbers that are evenly divisible by 3
+;*******************************************************************************************
 
 section .data
 
