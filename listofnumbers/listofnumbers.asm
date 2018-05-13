@@ -52,8 +52,35 @@ _start:
     mov dword [med], eax                            ; To get our middle value: med = eax
 
     mov ecx, LIMIT
+    mov r9, LIMIT
     mov rsi, 0                                      ; index = 0;
     mov eax, 0
+
+    mov r8d, 3
+calcSumDiv3:
+    mov eax, dword [list+rsi*4]
+    mov edx, 0
+    div r8d
+    cmp edx, 0
+    je SumDiv3
+    inc rsi
+    loop calcSumDiv3
+    
+    mov ecx, LIMIT
+    mov rsi, 0                                      ; index = 0;
+    mov eax, 0   
+    jmp calcTotalSum
+
+SumDiv3:
+    mov eax, dword [list+rsi*4]
+    add dword [sum_divby3], eax
+    inc rsi
+    loop calcSumDiv3
+    
+    mov ecx, LIMIT
+    mov rsi, 0
+    mov eax, 0
+
 ; -----
 ; Calculate the sum of all integers
 
