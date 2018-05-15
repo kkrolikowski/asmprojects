@@ -37,7 +37,7 @@ _start:
 SumListItems:
     add eax, dword [list+rsi*4]         ; eax += list[index]
     inc rsi                             ; index++ 
-    loop SumListItems                   ; loop unless index < LIMIT
+    loop SumListItems                   ; loop until index < LIMIT
     mov dword [sum_all], eax            ; sum_all = eax
 
 last:
