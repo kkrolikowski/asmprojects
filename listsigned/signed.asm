@@ -28,6 +28,8 @@ list                dd 13756,47637,45233,-20834,65610,-34332,-73428,92080,40119,
 
 sum_all             dd 0
 ave_all             dd 0
+min                 dd 0
+max                 dd 0
 
 section .text
 global _start
@@ -47,6 +49,30 @@ SumListItems:
     cdq                                 ; expand eax to edx:eax
     idiv r8d                            ; eax /= LIMIT
     mov dword [ave_all], eax            ; ave_all = eax
+
+    mov ecx, LIMIT                      ; reanitialize loop
+    mov rsi, 0                          ; LIMIT = 10, index = 0
+
+    mov eax, dword [list]
+    mov dword [min], eax                ; min = list[0]
+    mov dword [max], eax                ; max = list[0]
+FindMinAndMax:
+    mov eax, dword [list+rsi*4]
+    cmp eax, dword [min]                ; if list[index] < min
+    jl NewMin                           ; set new min
+    cmp eax, dword [max]                ; if list[index] > max
+    jg NewMax                           ; set new max
+    inc rsi                             ; index++
+    loop FindMinAndMax                  ; go to next item
+    jmp last
+NewMin:
+    mov dword [min], eax                ; min = eax
+    inc rsi                             ; index++
+    loop FindMinAndMax                  ; continue with loop
+NewMax:
+    mov dword [max], eax                ; max = eax
+    inc rsi                             ; index++
+    loop FindMinAndMax                  ; continue with loop
 
 last:
     mov rax, sys_EXIT
