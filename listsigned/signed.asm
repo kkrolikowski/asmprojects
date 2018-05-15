@@ -26,9 +26,20 @@ list                dd 13756,47637,45233,-20834,65610,-34332,-73428,92080,40119,
                     dd 57571,48742,8797,-61853,60984,-38131,-53912,-23978,-94681,88812
                     dd -80839,-21715,75424,15819,-80149,10398,-340,-63272,-49474,85524
 
+sum_all             dd 0
+
 section .text
 global _start
 _start:
+    mov ecx, LIMIT                      ; initialize loop settings
+    mov rsi, 0                          ; LIMIT = 10, index = 0
+
+SumListItems:
+    add eax, dword [list+rsi*4]         ; eax += list[index]
+    inc rsi                             ; index++ 
+    loop SumListItems                   ; loop unless index < LIMIT
+    mov dword [sum_all], eax            ; sum_all = eax
+
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
