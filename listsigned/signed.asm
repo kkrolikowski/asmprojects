@@ -27,6 +27,7 @@ list                dd 13756,47637,45233,-20834,65610,-34332,-73428,92080,40119,
                     dd -80839,-21715,75424,15819,-80149,10398,-340,-63272,-49474,85524
 
 sum_all             dd 0
+ave_all             dd 0
 
 section .text
 global _start
@@ -34,11 +35,18 @@ _start:
     mov ecx, LIMIT                      ; initialize loop settings
     mov rsi, 0                          ; LIMIT = 10, index = 0
 
+; Calculating sum of all items
 SumListItems:
     add eax, dword [list+rsi*4]         ; eax += list[index]
     inc rsi                             ; index++ 
     loop SumListItems                   ; loop until index < LIMIT
     mov dword [sum_all], eax            ; sum_all = eax
+
+; Calculating average of all items
+    mov r8d, LIMIT                      
+    cdq                                 ; expand eax to edx:eax
+    idiv r8d                            ; eax /= LIMIT
+    mov dword [ave_all], eax            ; ave_all = eax
 
 last:
     mov rax, sys_EXIT
