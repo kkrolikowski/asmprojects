@@ -25,6 +25,8 @@ list        dd 48272,58356,84260,85036,87892,66686,65157,34419,83447,50058
 
 sum_all     dd 0                                    ; sum of all integers
 sum_divby3  dd 0                                    ; sum of integers divisible by 3
+divby3_cnt  dd 0                                    ; amount of numbers divisible by 3
+divby3_ave  dd 0                                    ; average nunmber of divisibles by 3
 ave_all     dd 0                                    ; average of all integers
 min         dd 0                                    ; minimal list value
 max         dd 0                                    ; maximal list value
@@ -58,13 +60,18 @@ _start:
 
     mov r8d, 3
 calcSumDiv3:
-    mov eax, dword [list+rsi*4]
+    mov eax, dword [list+rsi*4]                     ; while (index < LIMIT)
+    mov edx, 0                                      ; {
+    div r8d                                         ;    if (list[index] % 3 == 0)
+    cmp edx, 0                                      ;    {   
+    je SumDiv3                                      ;       sum_divby3 += list[index];
+    inc rsi                                         ;       divby3_cnt++;
+    loop calcSumDiv3                                ;    } 
+                                                    ;    index++;
+    mov eax, dword [sum_divby3]                     ; }
     mov edx, 0
-    div r8d
-    cmp edx, 0
-    je SumDiv3
-    inc rsi
-    loop calcSumDiv3
+    div dword [divby3_cnt]                          ; divby3_ave = sum_divby3 / divby3_cnt;
+    mov dword [divby3_ave], eax
     
     mov ecx, LIMIT
     mov rsi, 0                                      ; index = 0;
@@ -74,9 +81,15 @@ calcSumDiv3:
 SumDiv3:
     mov eax, dword [list+rsi*4]
     add dword [sum_divby3], eax
+    inc dword [divby3_cnt]
     inc rsi
     loop calcSumDiv3
     
+    mov eax, dword [sum_divby3]
+    mov edx, 0
+    div dword [divby3_cnt]
+    mov dword [divby3_ave], eax
+
     mov ecx, LIMIT
     mov rsi, 0
     mov eax, 0
