@@ -27,7 +27,10 @@ list                dd 13756,47637,45233,-20834,65610,-34332,-73428,92080,40119,
                     dd -80839,-21715,75424,15819,-80149,10398,-340,-63272,-49474,85524
 
 sum_all             dd 0
+sum_negative        dd 0
 ave_all             dd 0
+ave_negative        dd 0
+count_negative      db 0
 min                 dd 0
 max                 dd 0
 midval              dd 0
@@ -68,7 +71,18 @@ FindMinAndMax:
     inc rsi                             ; index++
     loop FindMinAndMax                  ; go to next item
 
+    jmp MiddleValue
+NewMin:
+    mov dword [min], eax                ; min = eax
+    inc rsi                             ; index++
+    loop FindMinAndMax                  ; continue with loop
+NewMax:
+    mov dword [max], eax                ; max = eax
+    inc rsi                             ; index++
+    loop FindMinAndMax                  ; continue with loop
+
 ; Obtain the middle value
+MiddleValue:
     mov r8d, 2                          ; we assume that input list is even
     mov eax, LIMIT                      ; so we have to get two middle numbers
     mov edx, 0                          ; and obtain its average
@@ -82,16 +96,6 @@ FindMinAndMax:
     cdq
     idiv r8d                            ; eax /= 2
     mov dword [midval], eax             ; midval = eax
-
-    jmp last
-NewMin:
-    mov dword [min], eax                ; min = eax
-    inc rsi                             ; index++
-    loop FindMinAndMax                  ; continue with loop
-NewMax:
-    mov dword [max], eax                ; max = eax
-    inc rsi                             ; index++
-    loop FindMinAndMax                  ; continue with loop
 
 last:
     mov rax, sys_EXIT
