@@ -30,6 +30,8 @@ sum_all             dd 0
 ave_all             dd 0
 min                 dd 0
 max                 dd 0
+midval              dd 0
+tmp                 dd 0
 
 section .text
 global _start
@@ -53,6 +55,7 @@ SumListItems:
     mov ecx, LIMIT                      ; reanitialize loop
     mov rsi, 0                          ; LIMIT = 10, index = 0
 
+; Find min and max values from the list
     mov eax, dword [list]
     mov dword [min], eax                ; min = list[0]
     mov dword [max], eax                ; max = list[0]
@@ -64,6 +67,22 @@ FindMinAndMax:
     jg NewMax                           ; set new max
     inc rsi                             ; index++
     loop FindMinAndMax                  ; go to next item
+
+; Obtain the middle value
+    mov r8d, 2                          ; we assume that input list is even
+    mov eax, LIMIT                      ; so we have to get two middle numbers
+    mov edx, 0                          ; and obtain its average
+    div r8d                             ; index = LIMIT / 2
+    mov esi, eax
+    mov eax, dword [list+rsi*4]         ; second half of list: eax = list[index]
+    mov dword [tmp], eax                ; tmp = eax
+    dec rsi                             ; index--
+    mov eax, dword [list+rsi*4]         ; first half of list: eax = list[index]
+    add eax, dword [tmp]                ; eax += tmp
+    cdq
+    idiv r8d                            ; eax /= 2
+    mov dword [midval], eax             ; midval = eax
+
     jmp last
 NewMin:
     mov dword [min], eax                ; min = eax
