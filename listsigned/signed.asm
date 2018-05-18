@@ -28,9 +28,12 @@ list                dd 13756,47637,45233,-20834,65610,-34332,-73428,92080,40119,
 
 sum_all             dd 0
 sum_negative        dd 0
+sum_divby3          dd 0
 ave_all             dd 0
 ave_negative        dd 0
+ave_divby3          dd 0
 count_negative      dd 0
+count_divby3        dd 0
 min                 dd 0
 max                 dd 0
 midval              dd 0
@@ -109,7 +112,9 @@ NegativeNumbers:                        ; be sure to not to divide by 0
     loop NegativeNumbers
     cmp dword [sum_negative], r8d       ; if sum_negative != 0
     jne calculateNegativeAverage        ; calc the average
-    jmp last
+    mov ecx, LIMIT
+    mov rsi, 0
+    jmp Divby3
 WhenNegative:
     add dword [sum_negative], eax       ; sum_negative += list[index]
     inc rsi                             ; index++
@@ -120,6 +125,31 @@ calculateNegativeAverage:
     cdq
     idiv dword [count_negative]         ; eax /= count_negative
     mov dword [ave_negative], eax       ; ave_negative = eax
+
+    mov ecx, LIMIT                      ; LIMIT = 100, index = 0
+    mov rsi, 0
+    mov r9d, 3                          ; divisor = 3
+Divby3:
+    mov eax, [list+rsi*4]               ; while index < LIMIT
+    cdq
+    idiv r9d                            ; edx %= 3
+    cmp edx, r8d
+    je whenIsDivby3                     ; if edx == 0 go to whenIsDivby3
+    inc rsi                             ; index++
+    loop Divby3                         ; continue loop
+    cmp dword [sum_divby3], r8d         ; when sum_divby3 != 0
+    jne calculateDivby3Average          ; calculate the average
+    jmp last
+whenIsDivby3:
+    add dword [sum_divby3], eax         ; sum_divby3 += eax
+    inc dword [count_divby3]            ; count_divby3++
+    inc rsi                             ; index++
+    loop Divby3                         ; continue with loop
+calculateDivby3Average:
+    mov eax, dword [sum_divby3]         ; eax = sum_bydiv3
+    cdq
+    idiv dword [count_divby3]           ; eax /= count_divby3
+    mov dword [ave_divby3], eax         ; ave_divby3 = eax
 
 last:
     mov rax, sys_EXIT
