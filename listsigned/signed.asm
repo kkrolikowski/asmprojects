@@ -30,7 +30,7 @@ sum_all             dd 0
 sum_negative        dd 0
 ave_all             dd 0
 ave_negative        dd 0
-count_negative      db 0
+count_negative      dd 0
 min                 dd 0
 max                 dd 0
 midval              dd 0
@@ -40,7 +40,7 @@ section .text
 global _start
 _start:
     mov ecx, LIMIT                      ; initialize loop settings
-    mov rsi, 0                          ; LIMIT = 10, index = 0
+    mov rsi, 0                          ; LIMIT = 100, index = 0
 
 ; Calculating sum of all items
 SumListItems:
@@ -56,7 +56,7 @@ SumListItems:
     mov dword [ave_all], eax            ; ave_all = eax
 
     mov ecx, LIMIT                      ; reanitialize loop
-    mov rsi, 0                          ; LIMIT = 10, index = 0
+    mov rsi, 0                          ; LIMIT = 100, index = 0
 
 ; Find min and max values from the list
     mov eax, dword [list]
@@ -96,6 +96,30 @@ MiddleValue:
     cdq
     idiv r8d                            ; eax /= 2
     mov dword [midval], eax             ; midval = eax
+
+    mov ecx, LIMIT                      ; LIMIT = 100, index = 0
+    mov rsi, 0
+
+    mov r8d, 0                          ; useful to find negative values and to 
+NegativeNumbers:                        ; be sure to not to divide by 0
+    mov eax, [list+rsi*4]               ; while index < LIMIT
+    cmp eax, r8d                        ; if list[index] < 0
+    jl WhenNegative                     ; jump to  WhenNegative label
+    inc rsi
+    loop NegativeNumbers
+    cmp dword [sum_negative], r8d       ; if sum_negative != 0
+    jne calculateNegativeAverage        ; calc the average
+    jmp last
+WhenNegative:
+    add dword [sum_negative], eax       ; sum_negative += list[index]
+    inc rsi                             ; index++
+    inc dword [count_negative]          ; count_negative++
+    loop NegativeNumbers                ; continue with loop
+calculateNegativeAverage:
+    mov eax, dword [sum_negative]       ; eax = sum_negative
+    cdq
+    idiv dword [count_negative]         ; eax /= count_negative
+    mov dword [ave_negative], eax       ; ave_negative = eax
 
 last:
     mov rax, sys_EXIT
