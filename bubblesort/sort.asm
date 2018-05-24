@@ -19,39 +19,39 @@ lst             dd -91236,-78680,86732,-77536,3446,32335,51145,5377,54632,-99327
                 dd 82538,87164,-23069,28137,-14577,62373,2230,-42263,-57353,18997
                 dd -86739,30397,77305,-12307,4855,7439,75151,404,79529,-41925
 
-swapped         db 0
-
+swapped         db 0                    ; when swapped == 0 after full loop run,
+                                        ; we can assume, that all data are sorted
 section .text
 global _start
 _start:
-    mov rcx, MAX
-    jmp OuterLoop
+    mov rcx, MAX                        ; MAX = 100
+    jmp OuterLoop                       ; jump over Outer label.
 Outer:
-    cmp byte [swapped], 0
-    je last
+    cmp byte [swapped], 0               ; if swapped == 0:
+    je last                             ;   we can assume, that all values are sorted
 OuterLoop:
-    dec rcx
-    mov rsi, 0
-    mov byte [swapped], 0
-    cmp rcx, 0
-    je last
-    jmp InnerLoop
+    dec rcx                             ; MAX = MAX - 1
+    mov rsi, 0                          ; index = 0
+    mov byte [swapped], 0               ; swapped = 0
+    cmp rcx, 0                          ; if MAX == 0: 
+    je last                             ;   quit the program (safety switch)      
+    jmp InnerLoop                       ; go to inner loop
 Inner:
-    inc rsi
-    cmp rsi, rcx
-    je Outer
+    inc rsi                             ; index++
+    cmp rsi, rcx                        ; if index == MAX:
+    je Outer                            ;   go to outer loop
 InnerLoop:
-    mov eax, [lst+rsi*4]
-    mov r9d, [lst+(rsi+1)*4]
-    cmp eax, r9d
-    jg Swap
+    mov eax, [lst+rsi*4]                ; eax = lst[index]
+    mov r9d, [lst+(rsi+1)*4]            ; r9d = lst[index+1]
+    cmp eax, r9d                        ; if eax > r9d:
+    jg Swap                             ;   swap list values
     jmp Inner
 Swap:
-    mov r10d, dword [lst+(rsi+1)*4]
-    mov dword [lst+(rsi+1)*4], eax
-    mov dword [lst+rsi*4], r10d
-    mov byte [swapped], 1
-    jmp Inner
+    mov r10d, dword [lst+(rsi+1)*4]     ; r10d = lst[index+1]
+    mov dword [lst+(rsi+1)*4], eax      ; lst[index+1] = eax
+    mov dword [lst+rsi*4], r10d         ; lst[index] = r10d
+    mov byte [swapped], 1               ; swapped = 1
+    jmp Inner                           ; continue with next pair
     
 last:
     mov rax, sys_EXIT
