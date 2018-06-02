@@ -12,21 +12,20 @@ section .data
 ; Define constants
 
 EXIT_SUCCESS		equ 0
-sys_EXIT		equ 60
+sys_EXIT			equ 60
 
 ; -----
 ; Define data
 
-phrase		db "A man, a plan, a canal - Panama!",0
+phrase			db "A man, a plan, a canal - Panama!",0
 
-space		db 32
-comma		db 44
-minus		db 45
-exclamation	db 33
-capital_Z	db 90					; if char <= capital_Z it's capital
-palindrome	db 1
+space			db 32
+comma			db 44
+minus			db 45
+exclamation		db 33
 
-tmp			dq 0
+ispalindrome	db 1
+tmp				dq 0
 
 section .text
 global _start
@@ -62,7 +61,7 @@ nextValue:
 	inc rsi
 
 fromStack:
-	movzx al, [phrase+rsi]
+	mov al, [phrase+rsi]
 	cmp al, byte [space]
 	je nextValue
 	cmp al, byte [comma]
@@ -74,7 +73,7 @@ fromStack:
 
 	movzx rax, byte [phrase+rsi]
 	pop qword [tmp]
-	cmp r8b, qword [tmp]
+	cmp qword [tmp], 0
 	je last
 	cmp rax, qword [tmp]
 	jne NotSameChar
@@ -95,9 +94,9 @@ FindSmallerLetter:
 	sub rax, 32
 	cmp rax, qword [tmp]
 	je nextValue
-	
+
 NotPalindrome:
-	mov byte [palindrome], 0
+	mov byte [ispalindrome], 0
 
 last:
 	mov rax, sys_EXIT
