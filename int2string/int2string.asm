@@ -1,6 +1,6 @@
 ; ******************************************************************
 ; Simple program that converts intiger into a string. 
-; Algorythm:
+; Algorithm:
 ; Part1: divide integer by 10 and push remainder on the stack
 ;        untill integer value is > 0, increment digits count
 ; Part2: pop values from the stack and add 0x30 to it. It will
