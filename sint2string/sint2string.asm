@@ -25,7 +25,7 @@ section .text
 global _start
 _start:
     mov eax, dword [integer]
-    mov rcx, 0                              ; digits count = 0
+    mov rcx, 0                              ; digitsCount = 0
     mov r8d, 10                             ; to obtain reversed order of an integer
                                             ; we need to sequentialy divide it by 10
     cmp eax, 0                              ; if given integer is positive, we have to
@@ -39,30 +39,31 @@ isPositive:
     mov r9b, 1                              ; if given integer is positive we have to
     mov byte [string], "+"                  ; force multiplier = 1 and set first character
     inc rsi                                 ; in string to "+"
+    
 ; -----
 ; Push integers on stack
 
 pushLoop:
-    cdq                                     
-    idiv r8d
-    push rdx
-    inc rcx
-    cmp eax, 0
-    jne pushLoop
+    cdq
+    idiv r8d                                ; integer /= 10
+    push rdx                                ; push remainter on the stack
+    inc rcx                                 ; digitsCount++
+    cmp eax, 0                              ; if (integer > 0)
+    jne pushLoop                            ;    goto pushLoop
 
-    mov rbx, string
+    mov rbx, string                         ; set the string pointer
 
 ; -----
 ; pop integers from stack
 
 popLoop:
-    pop rax
-    imul r9b
-    add al, 48
-    mov byte [rbx+rsi], al
+    pop rax                                 ; get value from stack
+    imul r9b                                ; multiply it by 1 (or -1)
+    add al, 48                              ; add 0x30 to get the ASCII char
+    mov byte [rbx+rsi], al                  ; and save it in the array
     inc rsi
-    loop popLoop
-    mov byte [rbx+rsi], NULL
+    loop popLoop                            ; while digitsCount > 0 goto popLoop
+    mov byte [rbx+rsi], NULL                ; set the NULL at the end of string.
 
 last:
     mov rax, sys_EXIT
