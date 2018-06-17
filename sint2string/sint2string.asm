@@ -2,7 +2,25 @@
 ;  Simple program which can convert signed integer into a string.
 ;  Additional requirement is: if we have an integer > 0 we have to
 ;  put preceding + sign. Negative integers are preceded by -
-
+;
+; Algorithm:
+; 1) Determine if integer is positive or negative
+; 1a) if integer is positive:
+;     * set first character in resulting string to "+"
+;     * set multiplier to: 1
+; 1b) if integer is negative:
+;     * set first character in resulting string to "-"
+;     * set multiplier to: -1
+; 2) while integer is greater then 0 divide it by 10
+; 2a) push remainter to stack
+; 2b) increment digitCount
+; 3) while digitCount is greater then 0
+; 3a) pop value from stack
+; 3b) multiply it by multiplier (to ensure we have positive number)
+; 3c) add 0x30 to get the ASCII character
+; 3d) put character to the next character array field
+; 3e) decrement digitCount
+; 4) Add NULL character at the end to create string properly
 
 
 ; *****************************************************************
@@ -39,7 +57,7 @@ isPositive:
     mov r9b, 1                              ; if given integer is positive we have to
     mov byte [string], "+"                  ; force multiplier = 1 and set first character
     inc rsi                                 ; in string to "+"
-    
+
 ; -----
 ; Push integers on stack
 
