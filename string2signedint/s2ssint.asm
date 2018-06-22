@@ -1,7 +1,7 @@
 ; ***********************************************************************
 ;  Simple program that converts string with preceeding + or -
 ;  into a positive or negative number.
-;
+;  For example: 123450 = 0*1 + 5*10 + 4*100 + 3*1000 + 2*10000 + 1*100000
 ;  Algorithm
 ; ------------
 ; 1/ get first sign and chek if given number should be positive or not
@@ -27,10 +27,10 @@ sys_EXIT        equ 60
 
 section .data
 
-string          db "-123450",NULL
-integer         dd 0
-factor          dd 1
-negative        db 0
+string          db "-123450",NULL           ; example string to convert
+integer         dd 0                        ; resulting integer
+factor          dd 1                        ; factor used in converstions
+negative        db 0                        ; indicates if given string will be negative
 
 
 ; ***********************************************************************
@@ -39,61 +39,61 @@ negative        db 0
 section .text
 global _start
 _start:
-    mov rsi, 0
-    mov rcx, 0
+    mov rsi, 0                                ; stringIndex = 0
+    mov rcx, 0                                ; digitsCount = 0
 ; -----
 ; Determine number sign
 
-    mov rbx, string
-    cmp byte [rbx], "+"
-    je CountNumbers
-    mov byte [negative], 1
-
+    mov rbx, string                           ; set pointer at the begining of a string
+    cmp byte [rbx], "+"                       ; check if string is postive
+    je CountNumbers                           ; if yes - proceed with processing
+    mov byte [negative], 1                    ; if no - set negative flag to no
+                                              ; and afer that continue with processing
 ; -----
 ; Count the numbers
 
 CountNumbers:
-    inc rsi
-    cmp byte [rbx+rsi], NULL
-    je DigitizEmAll
-    inc rcx
-    jmp CountNumbers
+    inc rsi                                   ; move to the first / next number in string
+    cmp byte [rbx+rsi], NULL                  ; check if we reached end of string
+    je DigitizEmAll                           ; if not - convert a char into a integer
+    inc rcx                                   ; increment digitsCount
+    jmp CountNumbers                          ; process next character
 
 ; -----
 ; Turn characters into intigers
 
 updateFactor:
-    mov r8d, 10
-    mov eax, dword [factor]
+    mov r8d, 10                               ; on every subsequent iteration we should update
+    mov eax, dword [factor]                   ; factor 10 times it's previous value
     mov edx, 0
     mul r8d
-    mov dword [factor], eax
+    mov dword [factor], eax                   ; factor *= 10
 
 DigitizEmAll:
-    dec rsi
-    movzx eax, byte [rbx+rsi]
+    dec rsi                                   ; first step is to move backwards from the NULL sign
+    movzx eax, byte [rbx+rsi]                 ; now we can read proper character
 
-    sub eax, 48
-    mov edx, 0
-    mul dword [factor]
-    push rax
+    sub eax, 48                               ; 1/ if we remove 48 from the ASCII char value we will get
+    mov edx, 0                                ;    we will get  proper digit
+    mul dword [factor]                        ; 2/ digit *= factor
+    push rax                                  ; push resulting value
 
-    cmp rsi, 1
-    jne updateFactor
+    cmp rsi, 1                                ; we should stop on character first character following sign char
+    jne updateFactor                          ; after that we can continue with the last thing
 
 ; -----
-; Obtain resulting integer
+; Assemble resulting integer
 
 CalculateInteger:
-    pop rax
-    add dword [integer], eax
-    loop CalculateInteger
+    pop rax                                 ; get value from stack
+    add dword [integer], eax                ; integer += val
+    loop CalculateInteger                   ; while digitsCount > 0 continue with procedure
 
-    cmp byte [negative], 1
+    cmp byte [negative], 1                  ; if integer should be positive - end the program
     jb last
-
-    mov r8d, -1
-    mov eax, dword [integer]
+                                            ; if not
+    mov r8d, -1                             ; we have to multiply resulting integer by -1
+    mov eax, dword [integer]                ; to convert number into negative
     cdq
     imul r8d
     mov dword [integer], eax
