@@ -40,8 +40,11 @@ ave3        dd 0
 
 section .text
 
+; ***********************************************************************************************
+;                               FUNCTIONS DEFINITION
+
 ; -----
-; HLL call
+; HLL (C/C++) call
 ; ==========
 ; stats1(arr, len, sum, ave);
 ; arr, address - rdi
@@ -83,6 +86,9 @@ sumLoop:
 
     pop r12
 ret
+
+; ***********************************************************************************************
+;                               MAIN FUNCTION
 
 global _start
 _start:
