@@ -1,6 +1,6 @@
 ; ***********************************************************************************************
-;                           Program implements stats1 function.
-; Prerequisite: Array arr is sorted in ascending order.
+; Program implements stats1 function.
+; Function stats1() calculates sum and average values of a given array.
 ; Prototype: void stats1(int * arr, unsigned int len, int * sum, int * ave);
 
 ; ***********************************************************************************************
@@ -92,17 +92,27 @@ ret
 
 global _start
 _start:
+
+; -----
+; Data set #1
+
     mov rcx, ave1
     mov rdx, sum1
     mov esi, dword [len1]
     mov rdi, arr1
     call stats1
 
+; -----
+; Data set #2
+
     mov rcx, ave2
     mov rdx, sum2
     mov esi, dword [len2]
     mov rdi, arr2
     call stats1
+
+; -----
+; Data set #3
 
     mov rcx, ave3
     mov rdx, sum3
