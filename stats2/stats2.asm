@@ -30,6 +30,15 @@ med1b       dd 0
 sum1        dd 0
 ave1        dd 0
 
+arr2        dd -896167,-860773,-811613,-582881,-220898,-220642,171380,521558,647104,839307,915618
+len2        dd 11
+min2        dd 0
+max2        dd 0
+med2a       dd 0
+med2b       dd 0
+sum2        dd 0
+ave2        dd 0
+
 ; ************************************************************************
 ;                       CODE SECTION
 
@@ -141,6 +150,19 @@ _start:
     call stats2
     add rsp, 16
 
+; -----
+; Dataset #2
+    push ave2
+    push sum2
+    mov r9, max2
+    mov r8, med2b
+    mov rcx, med2a
+    mov rdx, min2
+    mov esi, dword [len2]
+    mov rdi, arr2
+    call stats2
+    add rsp, 16
+    
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
