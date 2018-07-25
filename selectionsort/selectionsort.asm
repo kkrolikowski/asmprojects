@@ -3,6 +3,21 @@
 ; This is implemented by selsort() function which gets two args.
 ; 1'st: reference to array
 ; 2'nd: array length
+; Algorithm:
+;   begin
+;     for i = 0 to len-1
+;       small = arr(i)
+;       index = i
+;       for j = i to len-1
+;         if ( arr(j) < small ) then
+;           small = arr(j)
+;           index = j
+;         end_if
+;       end_for
+;       arr(index) = arr(i)
+;       arr(i) = small
+;     end_for
+;   end_begin
 
 section .data
 
@@ -41,17 +56,20 @@ global selsort
 selsort:
 ; -----
 ; Prologue
+
+; Setting the stack frame
     push rbp
     mov rbp, rsp
-    sub rsp, 4
+
+; We need 8 bytes on the stack for local variables:
+; * small - [rbx]
+; * index - [rbx+4]
+    sub rsp, 8
     push rbx
     push r12
-; Stack layout
-; rbx    = small
-; rbx+4  = index
-    lea rbx, dword [rbp-4]
-    mov r12, 0
-
+    lea rbx, dword [rbp-8]
+    
+    mov r12, 0                      ; i = 0
 OuterLoop:
     mov eax, dword [rdi+r12*4]
     mov dword [rbx], eax            ; small = arr(i)
@@ -63,12 +81,12 @@ Outer:
     mov dword [rdi+r10*4], r11d     ; arr(index) = arr(i)
 
     mov r10d, dword [rbx]
-    mov dword [rdi+r12*4], r10d
+    mov dword [rdi+r12*4], r10d     ; arr(i) = small
     
-    inc r12
-    cmp r12, rsi
-    jb OuterLoop
-    jmp End
+    inc r12                         ; i++
+    cmp r12, rsi                    ; if i < len
+    jb OuterLoop                    ; then goto OuterLoop, else
+    jmp End                         ; end function
 
 Inner:
     mov r10, r12                    ; j = i
@@ -76,24 +94,28 @@ Innerloop:
     mov eax, dword [rbx]            ; eax = small
     cmp dword [rdi+r10*4], eax      ; if ( arr(j) < small ) then
     jl NewSmall                     ; goto newSmall
-    inc r10
-    cmp r10, rsi
-    jb Innerloop
-    jmp Outer
+    inc r10                         ; j++
+    cmp r10, rsi                    ; if j < len
+    jb Innerloop                    ; then goto InnerLoop
+    jmp Outer                       ; else - goto Outer
 
 NewSmall:
-    mov eax, dword [rdi+r10*4]
-    mov dword [rbx], eax
-    mov dword [rbx+4], r10d
-    inc r10
-    cmp r10, rsi
-    jb Innerloop
-    jmp Outer
+    mov eax, dword [rdi+r10*4]      
+    mov dword [rbx], eax            ; small = arr(j)
+    mov dword [rbx+4], r10d         ; index = j
+    inc r10                         ; j++
+    cmp r10, rsi                    ; if j < len
+    jb Innerloop                    ; then goto InnerLoop
+    jmp Outer                       ; else goto Outer
 End:
 ; -----
 ; Epilogue
-    pop r12
+
+; restore saved registers
+    pop r12                         
     pop rbx
+    
+; clear local variables
     mov rsp, rbp
     pop rbp
 ret
@@ -118,7 +140,7 @@ _start:
     mov esi, dword [len3]
     mov rdi, arr3
     call selsort
-    
+
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
