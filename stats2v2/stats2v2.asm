@@ -106,13 +106,13 @@ Inner_settings:
 
 Inner:
     mov eax, dword [rdi+r11*4]
-    cmp eax, dword [rbp]
-    jl SmallerNumber
-    inc r11
-    cmp r11, rsi
-    jl Inner
-    jmp Outer_post
-
+    cmp eax, dword [rbp]            ; if arr(j) < small
+    jl SmallerNumber                ; then set new small
+    inc r11                         ; else j++
+    cmp r11, rsi                    ; while j < len 
+    jl Inner                        ;   get new array element
+    jmp Outer_post                  ; when end of array is reached
+                                    ; change array vals in Outer_post
 SmallerNumber:
     mov dword [rbp], eax
     mov dword [rbp+4], r11d
@@ -125,9 +125,9 @@ Outer_post:
     mov dword [rdi+r11*4], r10d     ; arr(index) = arr(i)
     mov r10d, dword [rbp]           ; r10d = small
     mov dword [rdi+r12*4], r10d     ; arr(i) = small
-    inc r12
-    cmp r12, rsi
-    jb Outer_pre
+    inc r12                         ; i++
+    cmp r12, rsi                    ; while i < len
+    jb Outer_pre                    ;  go to next array element
 
 ; -----
 ; Epilogue
@@ -159,25 +159,28 @@ stats:
 ; -----
 ; Function code
 
-    mov r12, 0
+    mov r12, 0                          ; i = 0
     mov rax, 0
 SumLoop:
-    add eax, [rdi+r12*4]
-    inc r12
-    cmp r12, rsi
-    jb SumLoop
-    mov dword [rdx], eax
+    add eax, [rdi+r12*4]                ; eax += arr(i)
+    inc r12                             ; i++
+    cmp r12, rsi                        ; while i < len
+    jb SumLoop                          ;   update sum
+    mov dword [rdx], eax                ; *sum = eax
 
-    cdq
-    idiv esi
+    cdq                                 ; Average:
+    idiv esi                            ; eax /= len
     mov rbx, qword [rbp+24]
-    mov dword [rbx], eax
+    mov dword [rbx], eax                ; *rbx = eax
 
     mov r10d, dword [rdi]                ; min value
     mov dword [ecx], r10d
     mov r10d, dword [rdi+(rsi-1)*4]      ; max value
     mov dword [r8], r10d
 
+; to obtain middle values we have to determine if given "len"
+; is odd or even.
+; if len is odd: med1 = med2
     mov eax, esi
     mov r10d, 2
     mov edx, 0
@@ -193,8 +196,8 @@ SumLoop:
 LenIsEven:
     mov r10d, dword [rdi+rax*4]
     mov rbx, [rbp+16]
-    mov dword [rbx], r10d
-    mov r10d, dword [rdi+(rax-1)*4]
+    mov dword [rbx], r10d                ; *med2 = arr(len/2)
+    mov r10d, dword [rdi+(rax-1)*4]      ; *med1 = arr(--len/2)
     mov dword [r9], r10d
 
 End:
@@ -290,7 +293,7 @@ _start:
     mov rdi, arr4
     call stats
     add rsp, 16
-    
+
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
