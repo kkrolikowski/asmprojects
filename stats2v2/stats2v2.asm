@@ -16,6 +16,12 @@ sys_EXIT            equ 60
 
 arr1        dd -58347,44089,109502,-225582,898133,375601,793161,-520336,515823,-233378
 len1        dd 10
+sum1        dd 0
+min1        dd 0
+max1        dd 0
+med1a       dd 0
+med1b       dd 0
+ave1        dd 0
 
 section .text
 ; ******************************************************************************
@@ -100,6 +106,60 @@ ret
 ; ave:  reference, stack
 global stats
 stats:
+; -----
+; Prologue
+    push rbp
+    mov rbp, rsp
+    push r12
+    push rbx
+
+; -----
+; Function code
+
+    mov r12, 0
+    mov rax, 0
+SumLoop:
+    add eax, [rdi+r12*4]
+    inc r12
+    cmp r12, rsi
+    jb SumLoop
+    mov dword [rdx], eax
+
+    cdq
+    idiv esi
+    mov rbx, qword [rbp+24]
+    mov dword [rbx], eax
+
+    mov r10d, dword [rdi]                ; min value
+    mov dword [ecx], r10d
+    mov r10d, dword [rdi+(rsi-1)*4]      ; max value
+    mov dword [r8], r10d
+
+    mov eax, esi
+    mov r10d, 2
+    mov edx, 0
+    div r10d
+    cmp edx, 0
+    je LenIsEven
+    mov r10d, dword [rdi+rax*4]
+    mov dword [r9], r10d                 ; med1 value
+    mov rbx, [rbp+16]
+    mov dword [rbx], r10d                ; med2 value
+    jmp End
+
+LenIsEven:
+    mov r10d, dword [rdi+rax*4]
+    mov rbx, [rbp+16]
+    mov dword [rbx], r10d
+    mov r10d, dword [rdi+(rax-1)*4]
+    mov dword [r9], r10d
+
+End:
+; -----
+; Epilogue
+    pop rbx
+    pop r12
+    pop rbp
 ret
 
 ; ******************************************************************************
@@ -113,6 +173,17 @@ _start:
     mov esi, dword [len1]
     mov rdi, arr1
     call sort
+    
+    push ave1
+    push med1b
+    mov r9, med1a
+    mov r8, max1
+    mov rcx, min1
+    mov rdx, sum1
+    mov esi, dword [len1]
+    mov rdi, arr1
+    call stats
+    add rsp, 16
 
 last:
     mov rax, sys_EXIT
