@@ -23,6 +23,17 @@ med1a       dd 0
 med1b       dd 0
 ave1        dd 0
 
+arr2        dd 537134,-812835,386585,-704469,721080,252655,-525836,-583331,-758623,-372134
+            dd -519827,-631685,-798531,-657627,715946,159617,-589392,-765286,651167,750069
+            dd 17565,925047,-997726,855422,-908286,-866982,-507993
+len2        dd 27
+sum2        dd 0
+min2        dd 0
+max2        dd 0
+med2a       dd 0
+med2b       dd 0
+ave2        dd 0
+
 section .text
 ; ******************************************************************************
 ;                               FUNCTIONS
@@ -170,10 +181,13 @@ _start:
 
 ; -----
 ; Dataset #1
+
+; Sort arr1 array
     mov esi, dword [len1]
     mov rdi, arr1
     call sort
-    
+
+; Calculate statistics
     push ave1
     push med1b
     mov r9, med1a
@@ -182,6 +196,26 @@ _start:
     mov rdx, sum1
     mov esi, dword [len1]
     mov rdi, arr1
+    call stats
+    add rsp, 16
+
+; -----
+; Dataset #2
+
+; Sort arr1 array
+    mov esi, dword [len2]
+    mov rdi, arr2
+    call sort
+
+; Calculate statistics
+    push ave2
+    push med2b
+    mov r9, med2a
+    mov r8, max2
+    mov rcx, min2
+    mov rdx, sum2
+    mov esi, dword [len2]
+    mov rdi, arr2
     call stats
     add rsp, 16
 
