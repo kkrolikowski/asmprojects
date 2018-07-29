@@ -98,8 +98,83 @@ OuterFor_part2:
     pop rbp
 ret
 
+; -----
+; HLL call (C/C++): stats(arr, len, sum, ave, min, max, med1, med2);
+; 1'st arg: arr,  address, rdi
+; 2'nd arg: len,  value,   rsi
+; 3'rd arg: sum,  address, rdx
+; 4'th arg: ave,  address, rcx
+; 5'th arg: min,  address, r8
+; 6'th arg: max,  address, r9
+; 7'th arg: med1, address, stack
+; 8'th arg: med2, address, stack
 global stats
 stats:
+; -----
+; Prologue
+    push rbp
+    mov rbp, rsp
+    push r12
+    push rbx
+
+; -----
+; Function code
+
+; Minimal value
+    mov r12d, dword [rdi]
+    mov dword [r8], r12d
+
+; Maximal value
+    mov r12d, dword [rdi+(rsi-1)*4]
+    mov dword [r9], r12d
+
+; Sum of all array elements
+    mov eax, 0
+    mov r12, 0
+SumLoop:
+    add eax, dword [rdi+r12*4]
+    inc r12
+    cmp r12, rsi
+    jb SumLoop
+    mov dword [rdx], eax
+
+; Average array value
+    cdq
+    idiv esi
+    mov dword [rcx], eax
+
+; -----
+; Median values, if array is odd: med1 = med2
+
+; First, we need to obtain if array is odd or even
+    mov rax, rsi
+    mov rdx, 0
+    mov r12, 2
+    div r12
+    
+    mov r12d, dword [rdi+rax*4]
+    mov rbx, qword [rbp+24]
+    mov dword [rbx], r12d
+    
+    cmp rax, 0
+    jne ARRisEVEN
+    
+; When array is odd
+    mov rbx, qword [rbp+16]
+    mov dword [rbx], r12d
+    jmp END
+
+ARRisEVEN:
+    mov r12d, dword [rdi+(rax-1)*4]
+    mov rbx, qword [rbp+16]
+    mov dword [rbx], r12d
+
+; -----
+; Epilogue
+END:
+    pop rbx
+    pop r12
+    pop rbp
 ret
 
 global sqrt
@@ -116,6 +191,16 @@ _start:
     mov rdi, arr1
     call sort
 
+    push med1b
+    push med1a
+    mov r9, max1
+    mov r8, min1
+    mov rcx, ave1
+    mov rdx, sum1
+    mov esi, dword [len1]
+    mov rdi, arr1
+    call stats
+    add rsp, 16
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
