@@ -158,7 +158,7 @@ SumLoop:
     
     cmp rax, 0
     jne ARRisEVEN
-    
+
 ; When array is odd
     mov rbx, qword [rbp+16]
     mov dword [rbx], r12d
@@ -177,8 +177,62 @@ END:
     pop rbp
 ret
 
+; -----
+; HLL call (C/C++): sqrt(arr1, arr2, len);
+; Function will take every item from arr1, then calculate square root estimation
+; and place result in arr2 under the same place.
+; 1'st arg: arr1 (src arr): address, rdi
+; 2'nd arg: arr2 (dst arr): address, rsi
+; 3'rd arg: len:            value,   rdx
 global sqrt
 sqrt:
+; Prologue
+    push rbp
+    mov rbp, rsp
+    sub rsp, 12
+    push r12
+    push rbx
+    lea rbx, [rbp-12]
+
+; Function code
+    mov r12, 0                  ; src and dst array index
+    mov dword [rbx], 50         ; iterations limit
+    mov dword [rbx+8], edx      ; saving arrays length
+
+    mov eax, 0
+ArrayLoop:
+    mov r11, 0                  ; actual iteration number
+    mov eax, dword [rdi+r12*4]
+    mov dword [rbx+4], eax      ; iSqrt_est = arr[i]
+    jmp SQRT
+    inc r12
+    cmp r12d, dword [rbx+8]
+    jb ArrayLoop
+    jmp SQRT_END
+
+SQRT:
+    mov r10, 2
+    mov eax, dword [rdi+r12+4]
+    cdq
+    idiv dword [rbx+4]
+    add eax, dword [rbx+4]
+    cdq
+    idiv r10d
+    mov dword [rbx+4], eax
+    inc r11
+    cmp r11d, dword [rbx]
+    jb SQRT
+    mov dword [rsi+r12*4], eax
+    inc r12
+    cmp r12d, dword [rbx+8]
+    jb ArrayLoop
+
+SQRT_END:
+; Epilogue
+    pop rbx
+    pop r12
+    mov rsp, rbp
+    pop rbp
 ret
 
 global deviation
@@ -201,6 +255,12 @@ _start:
     mov rdi, arr1
     call stats
     add rsp, 16
+
+    mov edx, dword [len1]
+    mov rsi, sqrt1
+    mov rdi, arr1
+    call sqrt
+    
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
