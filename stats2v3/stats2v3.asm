@@ -156,8 +156,8 @@ SumLoop:
     mov rbx, qword [rbp+24]
     mov dword [rbx], r12d
     
-    cmp rax, 0
-    jne ARRisEVEN
+    cmp rdx, 0
+    je ARRisEVEN
 
 ; When array is odd
     mov rbx, qword [rbp+16]
