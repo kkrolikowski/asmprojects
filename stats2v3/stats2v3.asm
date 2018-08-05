@@ -13,7 +13,7 @@ section .data
 sys_EXIT            equ 60
 EXIT_SUCCESS        equ 0
 
-LIMIT1              equ 10
+LIMIT1              equ 11
 LIMIT2              equ 27
 LIMIT3              equ 50
 LIMIT4              equ 103
@@ -21,7 +21,7 @@ LIMIT4              equ 103
 ; -----
 ; Define datasets
 
-arr1        dd 735811,-819390,-297710,-919907,355,846065,755150,-877904,-6247,-430880
+arr1        dd 166385,967607,990658,993821,238646,828663,252564,456113,821465,661955,16
 len1        dd LIMIT1
 sum1        dd 0
 ave1        dd 0
@@ -29,7 +29,7 @@ med1a       dd 0
 med1b       dd 0
 min1        dd 0
 max1        dd 0
-stddev1     dd 0
+stddev1     dq 0
 
 section .bss
 sqrt1       resd LIMIT1
@@ -178,14 +178,14 @@ END:
 ret
 
 ; -----
-; HLL call (C/C++): sqrt(arr1, arr2, len);
+; HLL call (C/C++): sqrtArr(arr1, arr2, len);
 ; Function will take every item from arr1, then calculate square root estimation
 ; and place result in arr2 under the same place.
 ; 1'st arg: arr1 (src arr): address, rdi
 ; 2'nd arg: arr2 (dst arr): address, rsi
 ; 3'rd arg: len:            value,   rdx
-global sqrt
-sqrt:
+global sqrtArr
+sqrtArr:
 ; Prologue
     push rbp
     mov rbp, rsp
@@ -197,34 +197,33 @@ sqrt:
 ; Function code
     mov r12, 0                  ; src and dst array index
     mov dword [rbx], 50         ; iterations limit
-    mov dword [rbx+8], edx      ; saving arrays length
+    mov dword [rbx+4], edx      ; saving arrays length
 
     mov eax, 0
 ArrayLoop:
     mov r11, 0                  ; actual iteration number
-    mov eax, dword [rdi+r12*4]
-    mov dword [rbx+4], eax      ; iSqrt_est = arr[i]
-    jmp SQRT
+    mov dword [rbx+8], 1
+    jmp SQRT_Loop
     inc r12
-    cmp r12d, dword [rbx+8]
+    cmp r12d, dword [rbx+4]
     jb ArrayLoop
     jmp SQRT_END
 
-SQRT:
+SQRT_Loop:
     mov r10, 2
-    mov eax, dword [rdi+r12+4]
+    mov eax, dword [rdi+r12*4]
     cdq
-    idiv dword [rbx+4]
-    add eax, dword [rbx+4]
+    idiv dword [rbx+8]
+    add eax, dword [rbx+8]
     cdq
     idiv r10d
-    mov dword [rbx+4], eax
+    mov dword [rbx+8], eax
     inc r11
     cmp r11d, dword [rbx]
-    jb SQRT
+    jb SQRT_Loop
     mov dword [rsi+r12*4], eax
     inc r12
-    cmp r12d, dword [rbx+8]
+    cmp r12d, dword [rbx+4]
     jb ArrayLoop
 
 SQRT_END:
@@ -235,8 +234,63 @@ SQRT_END:
     pop rbp
 ret
 
+; -----
+; HLL call (C/C++): deviation(arr, len, ave, stddev);
+; 1'st arg: integer array - address: rdi
+; 2'nd arg: array length  - value:   rsi
+; 3'rd arg: average value - value:   rdx
+; 4'th arg: std deviation - address: rcx
 global deviation
 deviation:
+; Prologue
+    push rbp
+    mov rbp, rsp
+    sub rsp, 12
+    push rbx
+    push r12
+; Function code
+    lea rbx, [rbp-12]                ; local variable for tmp
+    mov qword [rbx], 0
+    mov dword [rbx+8], edx           ; local copy of average
+    mov r12, 0
+    mov eax, 0
+    mov r8, 0                        ; local sum
+STDDEV_LOOP:
+    mov eax, dword [rdi+r12*4]
+    sub eax, dword [rbx+8]
+    imul eax
+    mov dword [rbx], eax
+    mov dword [rbx+4], edx
+    add r8, qword [rbx]
+    inc r12
+    cmp r12, rsi
+    jb STDDEV_LOOP
+    mov rax, r8
+    cqo
+    idiv rsi
+
+    mov r12, 50
+    mov r11, 0
+    mov r10, 2
+    mov qword [rcx], 1
+    mov qword [rbx], rax
+SQUARE_ROOT:
+    mov rax, qword [rbx]
+    cqo
+    idiv qword [rcx]
+    add rax, qword [rcx]
+    cqo
+    idiv r10
+    mov qword [rcx], rax
+    inc r11
+    cmp r11, r12
+    jb SQUARE_ROOT
+    
+; Epilogue
+    pop r12
+    pop rbx
+    mov rsp, rbp
+    pop rbp
 ret
 
 global _start
@@ -259,8 +313,14 @@ _start:
     mov edx, dword [len1]
     mov rsi, sqrt1
     mov rdi, arr1
-    call sqrt
+    call sqrtArr
     
+    mov rcx, stddev1
+    mov edx, dword [ave1]
+    mov esi, dword [len1]
+    mov rdi, arr1
+    call deviation
+
 last:
     mov rax, sys_EXIT
     mov rdi, EXIT_SUCCESS
