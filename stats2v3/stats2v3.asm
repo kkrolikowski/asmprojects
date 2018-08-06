@@ -13,7 +13,7 @@ section .data
 sys_EXIT            equ 60
 EXIT_SUCCESS        equ 0
 
-LIMIT1              equ 11
+LIMIT1              equ 10
 LIMIT2              equ 27
 LIMIT3              equ 50
 LIMIT4              equ 103
@@ -21,7 +21,7 @@ LIMIT4              equ 103
 ; -----
 ; Define datasets
 
-arr1        dd 166385,967607,990658,993821,238646,828663,252564,456113,821465,661955,16
+arr1        dd 166385,967607,990658,993821,238646,828663,252564,456113,821465,661955
 len1        dd LIMIT1
 sum1        dd 0
 ave1        dd 0
@@ -31,8 +31,58 @@ min1        dd 0
 max1        dd 0
 stddev1     dq 0
 
+arr2        dd 825373,413344,27796,452413,225138,130508,143819,911391,807530,474160
+            dd 112475,560041,564563,708558,533203,792120,760586,350077,361273,787146
+            dd 590363,951099,154863,993315,850135,859848,508577
+len2        dd LIMIT2
+sum2        dd 0
+ave2        dd 0
+med2a       dd 0
+med2b       dd 0
+min2        dd 0
+max2        dd 0
+stddev2     dq 0
+
+arr3        dd 764349,346173,221497,666767,522227,786310,326038,535366,640309,817633
+            dd 252193,84710,14778,873471,71108,473824,136385,972460,217750,860345
+            dd 889903,247292,219998,390794,832126,516599,738627,352682,489389,676391
+            dd 964608,553562,28378,255555,280786,223678,670347,800690,476055,228036
+            dd 959461,287420,384638,163449,523288,627809,110755,756699,711652,453295
+len3        dd LIMIT3
+sum3        dd 0
+ave3        dd 0
+med3a       dd 0
+med3b       dd 0
+min3        dd 0
+max3        dd 0
+stddev3     dq 0
+
+arr4        dd 989249,171155,266482,370332,207119,161217,284018,727406,1286,823093
+            dd 108696,550114,683339,832115,234334,414677,424880,350104,197121,362649
+            dd 711314,797377,332662,690026,844134,832056,187087,486857,992318,950276
+            dd 387704,32074,404131,513307,619370,501013,919442,176147,881955,858676
+            dd 398837,166572,294745,884619,198724,186211,562846,602738,619082,99260
+            dd 31788,503404,16094,984531,894268,603424,640042,366922,868777,479056
+            dd 785357,618399,186862,741792,11483,97799,232290,898237,284668,495305
+            dd 4928,716515,936857,403276,281129,457584,455881,450783,768284,794685
+            dd 575421,21172,248129,280481,302384,557988,792137,867253,840874,188816
+            dd 346109,501888,542191,444079,334771,868726,817898,729075,655719,434300
+            dd 769501,824263,668281
+len4        dd LIMIT4
+sum4        dd 0
+ave4        dd 0
+med4a       dd 0
+med4b       dd 0
+min4        dd 0
+max4        dd 0
+stddev4     dq 0
+
 section .bss
+
 sqrt1       resd LIMIT1
+sqrt2       resd LIMIT2
+sqrt3       resd LIMIT3
+sqrt4       resd LIMIT4
 
 section .text
 
@@ -295,6 +345,9 @@ ret
 
 global _start
 _start:
+
+; -----
+; Dataset #1
     mov esi, dword [len1]
     mov rdi, arr1
     call sort
@@ -319,6 +372,90 @@ _start:
     mov edx, dword [ave1]
     mov esi, dword [len1]
     mov rdi, arr1
+    call deviation
+
+; -----
+; Dataset #2
+    mov esi, dword [len2]
+    mov rdi, arr2
+    call sort
+
+    push med2b
+    push med2a
+    mov r9, max2
+    mov r8, min2
+    mov rcx, ave2
+    mov rdx, sum2
+    mov esi, dword [len2]
+    mov rdi, arr2
+    call stats
+    add rsp, 16
+
+    mov edx, dword [len2]
+    mov rsi, sqrt2
+    mov rdi, arr2
+    call sqrtArr
+
+    mov rcx, stddev2
+    mov edx, dword [ave2]
+    mov esi, dword [len2]
+    mov rdi, arr2
+    call deviation
+
+; -----
+; Dataset #3
+    mov esi, dword [len3]
+    mov rdi, arr3
+    call sort
+
+    push med3b
+    push med3a
+    mov r9, max3
+    mov r8, min3
+    mov rcx, ave3
+    mov rdx, sum3
+    mov esi, dword [len3]
+    mov rdi, arr3
+    call stats
+    add rsp, 16
+
+    mov edx, dword [len3]
+    mov rsi, sqrt3
+    mov rdi, arr3
+    call sqrtArr
+
+    mov rcx, stddev3
+    mov edx, dword [ave3]
+    mov esi, dword [len3]
+    mov rdi, arr3
+    call deviation
+
+; -----
+; Dataset #4
+    mov esi, dword [len4]
+    mov rdi, arr4
+    call sort
+
+    push med4b
+    push med4a
+    mov r9, max4
+    mov r8, min4
+    mov rcx, ave4
+    mov rdx, sum4
+    mov esi, dword [len4]
+    mov rdi, arr4
+    call stats
+    add rsp, 16
+
+    mov edx, dword [len4]
+    mov rsi, sqrt4
+    mov rdi, arr4
+    call sqrtArr
+
+    mov rcx, stddev4
+    mov edx, dword [ave4]
+    mov esi, dword [len4]
+    mov rdi, arr4
     call deviation
 
 last:
