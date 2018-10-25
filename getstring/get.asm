@@ -135,12 +135,12 @@ prtDone:
     ret
 
 ; ------------------------------------------------------------------
-;                   void getString(char * string, int len);
+;                   int getString(char * string, int len);
 ; Arguments:
 ;   rdi: addr of string
 ;   rsi: string length
 ; Rerurns:
-;   nothing
+;   number of characters
 
 global getString
 getString:
@@ -155,29 +155,33 @@ getString:
     mov dword [rbx+8], esi      ; 2'nd arg: string length
     mov r12, 0                  ; char count
 getLoop:
+
+; -----
+; Read 1 char at a time from standard input
+
     mov rax, SYS_read
     mov rdi, STDIN
     lea rsi, byte [rbx+12]
     mov rdx, 1
     syscall
     
-    mov r11, qword [rbx]
-    mov al, byte [rbx+12]
+    mov r11, qword [rbx]        ; set dst string address
+    mov al, byte [rbx+12]       ; save character readed from stdin
     
-    cmp al, LF
-    je readDone
+    cmp al, LF                  ; if char == newline
+    je readDone                 ; stop reading characters
 
-    cmp r12d, dword [rbx+8]
-    jae getLoop
+    cmp r12d, dword [rbx+8]     ; if count >= max
+    jae getLoop                 ; continue reading input
 
-    mov byte [r11+r12], al
-    inc r12
+    mov byte [r11+r12], al      ; save current char into string array
+    inc r12                     ; count++
  
     jmp getLoop
 
 readDone:
-    mov byte [r11+r12], NULL
-    mov rax, r12
+    mov byte [r11+r12], NULL    ; set NULL at the end of string
+    mov rax, r12                ; return number of characters in string
     
     pop r12
     pop rbx
