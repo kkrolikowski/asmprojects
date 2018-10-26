@@ -10,6 +10,7 @@ section .data
 EXIT_SUCCESS        equ 0           ; success termination code
 NULL                equ 0           ; string termination
 LF                  equ 10          ; newline
+LIMIT               equ 24          ; password length
 
 STDOUT              equ 1           ; standard output (screen)
 
@@ -22,7 +23,8 @@ SYS_exit            equ 60          ; exit() system call code
 ; -----
 ; String constants used in main
 
-header              db "Program saves entered password to a file named: password.txt", LF, NULL
+header              db "Program saves entered password to a file named: password.txt.", LF
+                    db "Password should not exceed 24 characters.", LF, NULL
 prompt              db "Enter password: ", NULL
 
 section .bss
@@ -33,7 +35,7 @@ _start:
     call prints
     mov rdi, prompt
     call prints
-    
+
 End:
     mov rax, SYS_exit
     mov rdi, EXIT_SUCCESS
