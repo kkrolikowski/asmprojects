@@ -30,6 +30,9 @@ header              db "Program saves entered password to a file named: password
 prompt              db "Enter password: ", NULL
 EOL                 db LF, NULL     ; end of line
 
+; Error messages
+ERR_Empty_String    db "String is empty!", LF, NULL
+
 section .bss
 password            resb LIMIT+2    ; storage for provided password
 
@@ -45,9 +48,18 @@ _start:
     mov esi, LIMIT
     call gets
 
+    cmp rax, 0
+    je StringEmptyError
+
     mov rdi, password
     call prints
     mov rdi, EOL
+    call prints
+
+    jmp End
+
+StringEmptyError:
+    mov rdi, ERR_Empty_String
     call prints
 
 End:
@@ -147,9 +159,10 @@ getChrLoop:
     jmp getChrLoop                  ; go for next character
 
     mov byte [r10+r12], NULL        ; when all is done, set NULL at the end od string
-    mov rax, r12                    ; return number of characters read.
 
 getChrDone:
+    mov rax, r12                    ; return number of characters read.
+    
     pop r12
     pop rbx
     mov rsp, rbp
