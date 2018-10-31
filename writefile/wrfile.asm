@@ -11,6 +11,8 @@ EXIT_SUCCESS        equ 0           ; success termination code
 NULL                equ 0           ; string termination
 LF                  equ 10          ; newline
 LIMIT               equ 24          ; password length
+SUCCESS             equ 1
+NOSUCCESS           equ 0
 
 STDIN               equ 0           ; standard input (keyboard)
 STDOUT              equ 1           ; standard output (screen)
@@ -20,7 +22,18 @@ STDOUT              equ 1           ; standard output (screen)
 
 SYS_read            equ 0           ; read() system call code
 SYS_write           equ 1           ; write() system call code
+SYS_close           equ 3           ; close() system call code
 SYS_exit            equ 60          ; exit() system call code
+SYS_creat           equ 85          ; creat() system call code
+
+; -----
+; File settings
+
+O_CREAT             equ 0x40
+S_IRUSR             equ 00400q
+S_IWUSR             equ 00200q
+S_IRGRP             equ 00040q
+S_IROTH             equ 00004q
 
 ; -----
 ; String constants used in main
@@ -29,9 +42,12 @@ header              db "Program saves entered password to a file named: password
                     db "Password should not exceed 24 characters.", LF, NULL
 prompt              db "Enter password: ", NULL
 EOL                 db LF, NULL     ; end of line
+filename            db "password.txt", NULL
 
-; Error messages
+; Messages
 ERR_Empty_String    db "String is empty!", LF, NULL
+ERR_File_Write      db "Password file write error!", LF, NULL
+OK_File_Write       db "Password file write done.", LF, NULL
 
 section .bss
 password            resb LIMIT+2    ; storage for provided password
@@ -39,28 +55,62 @@ password            resb LIMIT+2    ; storage for provided password
 section .text
 global _start
 _start:
+; -----
+; Display basic program informations
+
     mov rdi, header
     call prints
-    
+
+; -----
+; Display prompt and get data from user
+
     mov rdi, prompt
     call prints
     mov rdi, password
     mov esi, LIMIT
     call gets
 
+; -----
+; If user didn't provide any input
+; Display error message and end program
+
     cmp rax, 0
     je StringEmptyError
 
-    mov rdi, password
-    call prints
-    mov rdi, EOL
-    call prints
+; -----
+; Create and write password file
+; with password provided by user
 
+    mov rdi, filename
+    mov rsi, password
+    call fwrite
+
+; -----
+; Verify if file creating operation
+; was successful or not.
+
+    cmp rax, SUCCESS
+    je WriteFileSuccess
+
+    cmp rax, NOSUCCESS
+    je WriteFileError
+
+WriteFileSuccess:
+    mov rdi, OK_File_Write
+    call prints
+    jmp End
+
+WriteFileError:
+    mov rdi, ERR_File_Write
+    call prints
     jmp End
 
 StringEmptyError:
     mov rdi, ERR_Empty_String
     call prints
+
+; -----
+; End program
 
 End:
     mov rax, SYS_exit
@@ -169,6 +219,82 @@ getChrDone:
     pop rbp
     ret
 
+; ----------------------------------------------------------------
+;       int fwrite(char *filename, char *strpass);
+; Args: address of filename string (rdi), address of password string (rsi)
+; Return: if filewrite operation is successful -> SUCCESS else -> NOSUCCESS
 global fwrite
 fwrite:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 8
+    push rbx
+
+    lea rbx, [rbp-8]
+    mov qword [rbx], rsi            ; copy filename string address
+    mov rdx, 0                      ; number of characters in string
+
+    mov r9, rsi                     ; temporary string pointer
+
+; -----
+; Count all characters in string
+
+passChrCountLoop:
+    cmp byte [r9], NULL
+    je passChrCountDone
+    inc r9
+    inc rdx                         ; RDX is needed later in the write syscall
+    jmp passChrCountLoop
+
+passChrCountDone:
+    cmp rdx, 0                      ; if somehow string was empty
+    je fwriteERROR                  ; we should return error state
+
+; -----
+; Open / create  a file
+; Previous file will be overwriten
+; RDI value is passed from a calling function (main)
+
+    mov rax, SYS_creat
+    mov rsi, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+    syscall
+
+    cmp rax, 0                      ; if file creation error occured
+    jl fwriteERROR                  ; we should return error state
+
+    mov r10, rax                    ; save opened file descriptor
+
+; -----
+; Write a given string to a file descriptor saved in R10 register
+; RDX was set during character counting
+
+    mov rax, SYS_write
+    mov rdi, r10
+    mov rsi, qword [rbx]
+    syscall
+
+    cmp rax, 0                      ; if file write error occured
+    jl fwriteERROR                  ; we should return error state
+
+; -----
+; Close a file when done
+
+    mov r10, rax
+    mov rax, SYS_close
+    mov rdi, r10
+    syscall
+
+    jmp fwriteDone
+    
+fwriteERROR:
+    mov rax, NOSUCCESS
+    jmp fwriteDone
+
+fwriteSUCCESS:
+    mov rax, SUCCESS
+
+fwriteDone:
+    pop rbx
+    mov rsp, rbp
+    pop rbp
     ret
