@@ -18,20 +18,21 @@ section .text
 
 global stats
 stats:
-    mov r10, 0
-    mov r11, 0
+    mov r10, 0                          ; list array index
+    mov r11, 0                          ; sum of integers
 CountLoop:
-    add r11d, dword [rdi+r10*4]
-    inc r10
-    cmp r10d, esi
-    jb CountLoop
+    add r11d, dword [rdi+r10*4]         ; sum += list[i]
+    inc r10                             ; i++
+    cmp r10d, esi                       ; while i < len
+    jb CountLoop                        ;   execute countLoop
 
-    mov dword [rdx], r11d
+    mov dword [rdx], r11d               ; save sum of integers
 
+; Calculate the average
     mov eax, r11d
     cdq
     idiv esi
 
-    mov dword [rcx], eax
+    mov dword [rcx], eax                ; save average of integers
 
     ret
