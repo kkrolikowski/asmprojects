@@ -66,8 +66,10 @@ ReadCharLoop:
 
     cmp byte [rbx+12], NL
     je ReadCharDone
-    cmp r12d, dword [rbx+8]
-    jae ReadCharLoop
+
+; BUG! Buffer size check disabled!
+;    cmp r12d, dword [rbx+8]
+;    jae ReadCharLoop
 
     mov r10b, byte [rbx+12]
     mov r11, qword [rbx]

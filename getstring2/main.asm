@@ -15,7 +15,7 @@ NL                      equ 10
 
 limit           dd STR_MAX
 prompt1         db "Enter string to process (MAX ", NULL
-prompt2         db " numbers): ", NULL
+prompt2         db " characters): ", NULL
 
 prompt3         db "String entered", NL, "-------------------", NL, NULL
 newLine         db NL, NULL
