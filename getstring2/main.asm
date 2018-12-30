@@ -17,6 +17,8 @@ limit           dd STR_MAX
 prompt1         db "Enter string to process (MAX ", NULL
 prompt2         db " numbers): ", NULL
 
+prompt3         db "String entered", NL, "-------------------", NL, NULL
+newLine         db NL, NULL
 
 section .bss
 
@@ -40,7 +42,18 @@ _start:
     call printString
     mov rdi, prompt2
     call printString
-    
+
+    mov rdi, buffer
+    mov esi, dword [limit]
+    call getString
+
+    mov rdi, prompt3
+    call printString
+    mov rdi, buffer
+    call printString
+    mov rdi, newLine
+    call printString
+
 
 last:
     mov rax, SYS_exit

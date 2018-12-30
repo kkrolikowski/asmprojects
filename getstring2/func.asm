@@ -5,8 +5,13 @@
 section .data
 
 NULL            equ 0
+NL              equ 10
+
 STDOUT          equ 1
+STDIN           equ 0
+
 SYS_write       equ 1
+SYS_read        equ 0
 
 section .text
 
@@ -41,6 +46,43 @@ ret
 
 global getString
 getString:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 13
+    push rbx
+    push r12
+
+    lea rbx, qword [rbp-13]
+    mov qword [rbx], rdi                ; buffer address
+    mov dword [rbx+8], esi              ; buffer limit
+    mov r12, 0                          ; char counter
+    
+ReadCharLoop:
+    mov rax, SYS_read
+    mov rdi, STDIN
+    lea rsi, byte [rbx+12]
+    mov rdx, 1
+    syscall
+
+    cmp byte [rbx+12], NL
+    je ReadCharDone
+    cmp r12d, dword [rbx+8]
+    jae ReadCharLoop
+
+    mov r10b, byte [rbx+12]
+    mov r11, qword [rbx]
+    mov byte [r11+r12], r10b
+    inc r12
+    jmp ReadCharLoop
+
+ReadCharDone:
+    mov byte [rbx+r12], NULL
+
+getStringDone:
+    pop r12
+    pop rbx
+    mov rsp, rbp
+    pop rbp
 ret
 
 ; --------
