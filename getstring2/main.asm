@@ -9,8 +9,14 @@ section .data
 EXIT_SUCCESS            equ 0
 SYS_exit                equ 60
 STR_MAX                 equ 10
+NULL                    equ 0
+NL                      equ 10
+
 
 limit           dd STR_MAX
+prompt1         db "Enter string to process (MAX ", NULL
+prompt2         db " numbers): ", NULL
+
 
 section .bss
 
@@ -27,7 +33,15 @@ _start:
     mov edi, dword [limit]
     mov rsi, intstr
     call i2s
+
+    mov rdi, prompt1
+    call printString
+    mov rdi, intstr
+    call printString
+    mov rdi, prompt2
+    call printString
     
+
 last:
     mov rax, SYS_exit
     mov rdi, EXIT_SUCCESS

@@ -5,14 +5,34 @@
 section .data
 
 NULL            equ 0
+STDOUT          equ 1
+SYS_write       equ 1
 
 section .text
 
 ; --------
-; printString(string, limit)
+; printString(string)
 
 global printString
 printString:
+    push rbx
+
+    mov rbx, rdi
+ReadLoop:
+    cmp byte [rbx], NULL
+    je printStringDone
+
+    mov rax, SYS_write
+    mov rdi, STDOUT
+    mov rsi, rbx
+    mov rdx, 1
+    syscall
+
+    inc rbx
+    jmp ReadLoop
+
+printStringDone:
+    pop rbx
 ret
 
 
