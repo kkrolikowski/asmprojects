@@ -31,18 +31,21 @@ puts:
     push rbx
 
     mov rbx, rdi
-    mov rdx, 0
+    mov rdx, 0                      ; number of characters to print
+
+; Now we have to obtain how many charaters string has
 coutLoop:
-    cmp byte [rbx], NULL
+    cmp byte [rbx], NULL            ; stop counting when string ends.
     je CountDone
     inc rdx
     inc rbx
     jmp coutLoop
 
 CountDone:
-    cmp rdx, 0
+    cmp rdx, 0                      ; if string was empty, we skip write() syscall
     je putsDone
 
+; Display given string on the screen
     mov rax, SYS_write
     mov rsi, rdi
     mov rdi, STDOUT
@@ -66,24 +69,35 @@ i2s:
     push rbx
     push r12
 
-    mov r10, 10
-    mov rax, rdi
-    mov rbx, rsi
-    mov r11, 0
-    mov r12, 0
+    mov r10, 10                     ; divisior
+    mov rax, rdi                    ; provided number
+    mov rbx, rsi                    ; destination string
+    mov r11, 0                      ; numbers pushed on stack
+    mov r12, 0                      ; numbers popped from stack
+
+; Algorithm below:
+; Divide integer by 10 and push on stack remainder untill result
+; of division is greater than 0.
 DivideLoop:
     mov rdx, 0
     cmp rax, 0
     je PopLoop
 
+; Ensure that we won't overflow character array
     cmp r11, INT_MAX
     je PopLoop
-    
+
     div r10
     push rdx
     inc r11
     jmp DivideLoop
 
+; Algorithm below:
+;   1) get from stack number, 
+;   2) convert it into character by adding 48
+;   3) save it in the next array field
+;   4) repeat untill current number cout is less then
+;       number of values stored on stack. 
 PopLoop:
     cmp r12, r11
     je i2sDone
@@ -112,6 +126,10 @@ global showArgs
 showArgs:
     push rbp
     mov rbp, rsp
+; We need to reserve 27 bytes on the stack
+; * 11 bytes for character array
+; * 8 bytes for addres of argv from main
+; * 8 bytes for address of local string
     sub rsp, 27
     push rbx
     push r12
@@ -123,11 +141,14 @@ showArgs:
     mov r13, qword [rbx+8]                  ; address of args array
     lea r12, qword [rbx+16]                 ; address of local intstring
 
-    mov r8, 1
+    mov r8, 1                               ; this will skip argv[0]
 ArgsLoop:
-    cmp r8, qword [rbx]
+    cmp r8, qword [rbx]                     ; check the argc
     je ArgsLoopEnd
 
+; Inside this loop we want to prefix each arg with:
+; 1: arg1,
+; 2: arg2.... and so on. So we have to convert curent arg number into string each time
     mov rdi, r8
     mov rsi, r12
     call i2s
@@ -136,11 +157,11 @@ ArgsLoop:
     call puts
     mov rdi, colon
     call puts
-    mov rdi, qword [r13+r8*8]
+    mov rdi, qword [r13+r8*8]               ; Display argv[i]
     call puts
     mov rdi, newline
     call puts
-    inc r8
+    inc r8                                  ; i++
     jmp ArgsLoop
 
 ArgsLoopEnd:
