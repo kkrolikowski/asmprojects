@@ -29,12 +29,17 @@ usage                   db "readfile quick help.", LF
                         db "If you need to display first-n lines from file specify second argument", LF
                         db "Usage: ./readfile simple.txt [n-lines]", LF, NULL
 notFound                db "File not found.", LF, NULL
+negativeError           db "ERROR: argument cannot be negative", LF, NULL
+InvalidError            db "ERROR: line number is invalid.", LF, NULL
 
 section .bss
 fd                      resq 1      ; file descriptor
+lines                   resd 1      ; how many lines display
 
 extern prints
 extern openFile
+extern closeFile
+extern s2int
 
 section .text
 global main
@@ -50,7 +55,34 @@ main:
 
     cmp rax, ENOENT
     je FileNotFound
+    mov qword [fd], rax
 
+    cmp r12, 2
+    ja OptionalArg
+    jmp last
+    
+OptionalArg:
+    mov rdi, qword [r13+2*8]
+    call s2int
+
+    cmp rax, -1
+    je NegativeArg
+    cmp rax, -2
+    je InvalidNumber
+
+    mov rdi, qword [fd]
+    call closeFile
+
+    jmp last
+
+NegativeArg:
+    mov rdi, negativeError
+    call prints
+    jmp last
+
+InvalidNumber:
+    mov rdi, InvalidError
+    call prints
     jmp last
 
 FileNotFound:
