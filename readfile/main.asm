@@ -60,6 +60,11 @@ main:
 
     cmp r12, 2
     ja OptionalArg
+
+    mov rdi, qword [fd]
+    mov rsi, -1
+    call readLines
+    
     jmp last
     
 OptionalArg:

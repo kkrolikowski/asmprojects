@@ -53,9 +53,13 @@ readLines:
 
     mov r12, 0
 readLoop:
+    cmp dword [rbx+8], -1
+    je ReadFile
+    
     cmp r12d, dword [rbx+8]
     je readEnd
 
+ReadFile:
     mov rax, SYS_read
     mov rdi, qword [rbx]
     mov rsi, r13
