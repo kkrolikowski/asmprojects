@@ -40,6 +40,7 @@ extern prints
 extern openFile
 extern closeFile
 extern s2int
+extern readLines
 
 section .text
 global main
@@ -69,6 +70,10 @@ OptionalArg:
     je NegativeArg
     cmp rax, -2
     je InvalidNumber
+
+    mov rdi, qword [fd]
+    mov rsi, rax
+    call readLines
 
     mov rdi, qword [fd]
     call closeFile
