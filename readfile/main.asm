@@ -36,54 +36,73 @@ section .bss
 fd                      resq 1      ; file descriptor
 lines                   resd 1      ; how many lines display
 
-extern prints
-extern openFile
-extern closeFile
-extern s2int
-extern readLines
+extern prints                       ; print string on screen
+extern openFile                     ; file open
+extern closeFile                    ; file close
+extern s2int                        ; string to integer
+extern readLines                    ; read lines from file
 
 section .text
 global main
 main:
-    mov r12, rdi
-    mov r13, rsi
+; Commandline args
+    mov r12, rdi                     ; argc
+    mov r13, rsi                     ; *argv[]
 
     cmp r12, 2                      ; if (argc < 2)
     jl HelpMessage                  ; display help message and quit
 
+; Open a file
     mov rdi, qword [r13+1*8]        ; argv[1] -- filepath
     call openFile
 
+; Check if file exists
     cmp rax, ENOENT
     je FileNotFound
+
+; Save file descriptor
     mov qword [fd], rax
 
+; Check if number of lines was provided
     cmp r12, 2
     ja OptionalArg
 
+; Read whole file
+; -1 is a magick arg, that tells function to read whole file
     mov rdi, qword [fd]
     mov rsi, -1
     call readLines
-    
+
     jmp last
     
 OptionalArg:
+; convert second argument to integer
     mov rdi, qword [r13+2*8]
     call s2int
+
+; Errors handled:
+;   * lines count cannot be negative
+;   * lines count cannot start with 0
+;   * lines count must contain only numbers
 
     cmp rax, -1
     je NegativeArg
     cmp rax, -2
     je InvalidNumber
 
+; Read lines from file
     mov rdi, qword [fd]
     mov rsi, rax
     call readLines
 
+; Close a file
     mov rdi, qword [fd]
     call closeFile
 
     jmp last
+
+; ----------------------------------------------
+;   ERROR handling
 
 NegativeArg:
     mov rdi, negativeError
@@ -108,6 +127,8 @@ HelpMessage:
     mov rdi, usage
     call prints
 
+; -----
+; Program end
 last:
     mov rax, SYS_exit
     mov rdi, EXIT_SUCCESS
